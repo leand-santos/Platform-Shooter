@@ -12,36 +12,40 @@ public class ClienteFrame extends JFrame implements Runnable {
     Personagem person = new Personagem(); //
     static PrintStream os = null;
     JTextArea textArea;
-    int pos = 20;
+    int pos1 = 20;
+    int pos2 = 100;
     int varControle = -1;
-    String nomePersonagem[] = { "RambroParado", "RambroMov1", "RambroMov2", "RambroQuaseParado", "BromaxParado",
-            "BromaxMov1", "BromaxMov2", "BromaxQuaseParado"};
-    Hashtable<String, Integer> valorPosicaoImagem = new Hashtable<String, Integer>();
 
     class Personagem extends JPanel {
+        String nomePersonagem[] = { "RambroParado", "RambroMov1", "RambroMov2", "RambroQuaseParado", "BromaxParado",
+                "BromaxMov1", "BromaxMov2", "BromaxQuaseParado" };
+        Hashtable<String, Integer> valorNumeroPersonagem = new Hashtable<String, Integer>();
+
         Personagem() {
             // 32 x 32 personagem
             setPreferredSize(new Dimension(1000, 720));
-            //try {
-                //for(int i = 0; i < 8; i++) { //
-                    //personagem[i] = ImageIO.read(new File("img/" + nomePersonagem[i] + ".png"));
-                    //valorPosicaoImagem.put(nomePersonagem[i], i);
-                    //System.out.println(valorPosicaoImagem.get(nomePersonagem[i]));
-                //}
-
-            //} catch (IOException e) {
-            //    JOptionPane.showMessageDialog(this, "A imagem não pode ser carregada!\n" + e, "Erro",
-            //            JOptionPane.ERROR_MESSAGE);
-            //    System.exit(1);
-            // }
-        } //RESOLVER PROBLEMA
+            try {
+                for (int i = 0; i < 8; i++) {
+                    personagem[i] = ImageIO.read(new File("img/" + nomePersonagem[i] + ".png"));
+                    valorNumeroPersonagem.put(nomePersonagem[i], i);
+                }
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "A imagem não pode ser carregada!\n" + e, "Erro",
+                        JOptionPane.ERROR_MESSAGE);
+                System.exit(1);
+            }
+        } // RESOLVER PROBLEMA
 
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
-            //g.drawImage(personagem[valorPosicaoImagem.get("RambroParado")], pos,
-            //        getSize().height - (personagem[valorPosicaoImagem.get("RambroParado")].getHeight(this) * 3) - 38,
-            //        personagem[valorPosicaoImagem.get("RambroParado")].getWidth(this) * 3,
-            //        personagem[valorPosicaoImagem.get("RambroParado")].getHeight(this) * 3, this);
+            g.drawImage(personagem[valorNumeroPersonagem.get("RambroParado")], pos1,
+                    getSize().height - (personagem[valorNumeroPersonagem.get("RambroParado")].getHeight(this) * 3) - 38,
+                    personagem[valorNumeroPersonagem.get("RambroParado")].getWidth(this) * 3,
+                    personagem[valorNumeroPersonagem.get("RambroParado")].getHeight(this) * 3, this);
+            g.drawImage(personagem[valorNumeroPersonagem.get("BromaxParado")], pos2,
+                    getSize().height - (personagem[valorNumeroPersonagem.get("BromaxParado")].getHeight(this) * 3) - 38,
+                    personagem[valorNumeroPersonagem.get("BromaxParado")].getWidth(this) * 3,
+                    personagem[valorNumeroPersonagem.get("BromaxParado")].getHeight(this) * 3, this);
             Toolkit.getDefaultToolkit().sync();
         }
 
@@ -62,14 +66,15 @@ public class ClienteFrame extends JFrame implements Runnable {
                 case KeyEvent.VK_RIGHT:
                     inputValue += "VK_RIGHT ";
                     os.println(inputValue);
-                    System.out.println(inputValue);
+                    // System.out.println(inputValue);
                     break;
                 }
             }
         });
     }
+
     public static void main(String[] args) {
-            new Thread(new ClienteFrame()).start();
+        new Thread(new ClienteFrame()).start();
     }
 
     public void run() {
@@ -95,11 +100,18 @@ public class ClienteFrame extends JFrame implements Runnable {
                 System.out.println("Cliente " + varControle);
             }
             String inputLine;
+            String vet[] = new String[10];
 
             do {
                 inputLine = is.nextLine();
-                int valor = Integer.parseInt(inputLine);
-                pos += valor;
+                System.out.println(inputLine);
+                vet = inputLine.split(" ");
+                int valor = Integer.parseInt(vet[1]);
+                int valor2 = Integer.parseInt(vet[0]);
+                if (valor2 == 0) 
+                    pos1 += valor;
+                 else if (valor2 == 1) 
+                    pos2 += valor;
                 repaint();
             } while (!inputLine.equals(""));
 

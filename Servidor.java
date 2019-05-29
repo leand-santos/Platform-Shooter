@@ -66,9 +66,9 @@ class Servindo extends Thread {
                 vet = inputLine.split(" ");
                 for (int i = 0; i < cont; i++) {
                     if (vet[1].compareTo("VK_RIGHT") == 0) { // retornar qual player é
-                        os[i].println("1");
+                        System.out.println("Cliente " + vet[0] + " pos 1");
+                        os[i].println(vet[0] + " 1");
                         os[i].flush();
-
                     }
                 }
             } while (!inputLine.equals(""));
