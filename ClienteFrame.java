@@ -82,7 +82,7 @@ public class ClienteFrame extends JFrame implements Runnable {
         Scanner is = null;
 
         try {
-            socket = new Socket("127.0.0.1", 80);
+            socket = new Socket("25.79.169.156", 80);
             os = new PrintStream(socket.getOutputStream(), true); // Recebendo os dados que o servidor manda
             is = new Scanner(socket.getInputStream()); // Escaneia os dados fornecidos pelo cliente
         } catch (UnknownHostException e) {
