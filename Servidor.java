@@ -4,9 +4,11 @@ import java.util.*;
 import java.lang.*;
 
 class Servidor {
+    final int cliente1 = 0, cliente2 = 1, numCliente = 0, posCliente = 1, btCliente = 2; // Constantes para facilitar a
+                                                                                         // leitura do código
+
     public static void main(String[] args) {
         ServerSocket serverSocket = null;
-
         try {
             serverSocket = new ServerSocket(80);
         } catch (IOException e) {
@@ -38,6 +40,8 @@ class Servidor {
 }
 
 class Servindo extends Thread {
+    final int cliente1 = 0, cliente2 = 1, numCliente = 0, posCliente = 1, btCliente = 2; // Constantes para facilitar a
+                                                                                         // leitura do código
     Socket clientSocket;
     static PrintStream os[] = new PrintStream[3];
     static int cont = 0;
@@ -65,12 +69,22 @@ class Servindo extends Thread {
                 inputLine = is.nextLine();
                 vet = inputLine.split(" ");
                 for (int i = 0; i < cont; i++) {
-                    if (vet[1].compareTo("VK_RIGHT") == 0) { // retornar qual player é
-                        System.out.println("Cliente " + vet[0] + " pos 1");
-                        os[i].println(vet[0] + " 1");
-                        os[i].flush();
+                    if (vet[btCliente].compareTo("VK_RIGHT") == 0) { // retornar qual player é
+                        System.out.println(
+                                "Cliente " + vet[numCliente] + " posX " + vet[posCliente] + " bt " + vet[btCliente]);
+                        int novaPos = Integer.parseInt(vet[posCliente]);
+                        novaPos++;
+                        if (novaPos < 150) {
+                            os[i].println(vet[numCliente] + " " + novaPos + " " + vet[btCliente]);
+                            os[i].flush();
+                        } else {
+                            novaPos--;
+                            os[i].println(vet[numCliente] + " " + novaPos + " " + vet[btCliente]);
+                            os[i].flush();
+                        }
                     }
                 }
+
             } while (!inputLine.equals(""));
 
             for (int i = 0; i < cont; i++)

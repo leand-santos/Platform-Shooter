@@ -9,22 +9,24 @@ import javax.imageio.*;
 
 public class ClienteFrame extends JFrame implements Runnable {
     Image personagem[] = new Image[20];
-    Personagem person = new Personagem(); //
     static PrintStream os = null;
-    JTextArea textArea;
-    int pos1 = 20;
-    int pos2 = 100;
-    int varControle = -1;
+    int posX1 = 20; // Variável para posição X do personagem 1
+    int posX2 = 100; // Variável para posição X do personagem 2
+    int varControle = -1; // Variável para saber qual cliente é
+    final int cliente1 = 0, cliente2 = 1, numCliente = 0, posCliente = 1, btCliente = 2; // Constantes para facilitar a leitura do código
 
     class Personagem extends JPanel {
+        // String para nomes das imagens dos personagens e cenário
         String nomePersonagem[] = { "RambroParado", "RambroMov1", "RambroMov2", "RambroQuaseParado", "BromaxParado",
                 "BromaxMov1", "BromaxMov2", "BromaxQuaseParado" };
+        // Hashtable armazena os valores de acesso ao vetor de imagem
         Hashtable<String, Integer> valorNumeroPersonagem = new Hashtable<String, Integer>();
 
         Personagem() {
-            // 32 x 32 personagem
-            setPreferredSize(new Dimension(1000, 720));
+            // Tamanho das sprites: 32 x 32 personagem
+            setPreferredSize(new Dimension(1024, 704)); // 32*32 e 32*22 Tamanho do mapa
             try {
+                // Lê todas as imagens da pasta img e coloca os valores da posição da imagem no veto
                 for (int i = 0; i < 8; i++) {
                     personagem[i] = ImageIO.read(new File("img/" + nomePersonagem[i] + ".png"));
                     valorNumeroPersonagem.put(nomePersonagem[i], i);
@@ -34,15 +36,15 @@ public class ClienteFrame extends JFrame implements Runnable {
                         JOptionPane.ERROR_MESSAGE);
                 System.exit(1);
             }
-        } // RESOLVER PROBLEMA
+        } 
 
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
-            g.drawImage(personagem[valorNumeroPersonagem.get("RambroParado")], pos1,
+            g.drawImage(personagem[valorNumeroPersonagem.get("RambroParado")], posX1,
                     getSize().height - (personagem[valorNumeroPersonagem.get("RambroParado")].getHeight(this) * 3) - 38,
                     personagem[valorNumeroPersonagem.get("RambroParado")].getWidth(this) * 3,
                     personagem[valorNumeroPersonagem.get("RambroParado")].getHeight(this) * 3, this);
-            g.drawImage(personagem[valorNumeroPersonagem.get("BromaxParado")], pos2,
+            g.drawImage(personagem[valorNumeroPersonagem.get("BromaxParado")], posX2,
                     getSize().height - (personagem[valorNumeroPersonagem.get("BromaxParado")].getHeight(this) * 3) - 38,
                     personagem[valorNumeroPersonagem.get("BromaxParado")].getWidth(this) * 3,
                     personagem[valorNumeroPersonagem.get("BromaxParado")].getHeight(this) * 3, this);
@@ -53,7 +55,9 @@ public class ClienteFrame extends JFrame implements Runnable {
 
     ClienteFrame() {
         super("TowerFall");
-        add(person);
+        setResizable(false);
+        setLayout(new GridLayout());
+        add(new Personagem());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         pack();
         setVisible(true);
@@ -64,7 +68,7 @@ public class ClienteFrame extends JFrame implements Runnable {
                 // (número do cliente, botão apertado)
                 switch (e.getKeyCode()) {
                 case KeyEvent.VK_RIGHT:
-                    inputValue += "VK_RIGHT ";
+                    inputValue += posX1 + " VK_RIGHT ";
                     os.println(inputValue);
                     // System.out.println(inputValue);
                     break;
@@ -106,12 +110,12 @@ public class ClienteFrame extends JFrame implements Runnable {
                 inputLine = is.nextLine();
                 System.out.println(inputLine);
                 vet = inputLine.split(" ");
-                int valor = Integer.parseInt(vet[1]);
-                int valor2 = Integer.parseInt(vet[0]);
-                if (valor2 == 0) 
-                    pos1 += valor;
-                 else if (valor2 == 1) 
-                    pos2 += valor;
+                int posAtualRecebida = Integer.parseInt(vet[posCliente]);
+                int numClienteRecebido = Integer.parseInt(vet[numCliente]);
+                if (numClienteRecebido == cliente1) 
+                    posX1 = posAtualRecebida;
+                 else if (numClienteRecebido == cliente2) 
+                    posX2 = posAtualRecebida;
                 repaint();
             } while (!inputLine.equals(""));
 
