@@ -5,15 +5,21 @@ import java.awt.image.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.util.Timer;
+
 import javax.imageio.*;
 
 public class ClienteFrame extends JFrame implements Runnable {
     Image personagem[] = new Image[20];
+    Image background[] = new Image[1];
     static PrintStream os = null;
-    int posX1 = 20; // Variável para posição X do personagem 1
+    int posX1 = 0; // Variável para posição X do personagem 1
     int posX2 = 100; // Variável para posição X do personagem 2
+    int posY1 = 0;
+    int posY2 = 100;
     int varControle = -1; // Variável para saber qual cliente é
-    final int cliente1 = 0, cliente2 = 1, numCliente = 0, posCliente = 1, btCliente = 2; // Constantes para facilitar a leitura do código
+    final int cliente1 = 0, cliente2 = 1, numCliente = 0, posCliente = 1, btCliente = 2; // Constantes para facilitar a
+                                                                                         // leitura do código
 
     class Personagem extends JPanel {
         // String para nomes das imagens dos personagens e cenário
@@ -24,11 +30,13 @@ public class ClienteFrame extends JFrame implements Runnable {
 
         Personagem() {
             // Tamanho das sprites: 32 x 32 personagem
-            setPreferredSize(new Dimension(1024, 704)); // 32*32 e 32*22 Tamanho do mapa
+            setPreferredSize(new Dimension(1024, 768)); // 32*32 e 32*24 Tamanho do mapa
             try {
-                // Lê todas as imagens da pasta img e coloca os valores da posição da imagem no veto
+                background[0] = ImageIO.read(new File("img/bg/Background.png"));
+                // Lê todas as imagens da pasta img e coloca os valores da posição da imagem no
+                // vetor
                 for (int i = 0; i < 8; i++) {
-                    personagem[i] = ImageIO.read(new File("img/" + nomePersonagem[i] + ".png"));
+                    personagem[i] = ImageIO.read(new File("img/player/" + nomePersonagem[i] + ".png"));
                     valorNumeroPersonagem.put(nomePersonagem[i], i);
                 }
             } catch (IOException e) {
@@ -36,39 +44,52 @@ public class ClienteFrame extends JFrame implements Runnable {
                         JOptionPane.ERROR_MESSAGE);
                 System.exit(1);
             }
-        } 
+        }
 
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
-            g.drawImage(personagem[valorNumeroPersonagem.get("RambroParado")], posX1,
-                    getSize().height - (personagem[valorNumeroPersonagem.get("RambroParado")].getHeight(this) * 3) - 38,
+            g.drawImage(background[0], 0, 0, this);
+            g.drawImage(personagem[valorNumeroPersonagem.get("RambroParado")], posX1, posY1,
                     personagem[valorNumeroPersonagem.get("RambroParado")].getWidth(this) * 3,
                     personagem[valorNumeroPersonagem.get("RambroParado")].getHeight(this) * 3, this);
             g.drawImage(personagem[valorNumeroPersonagem.get("BromaxParado")], posX2,
-                    getSize().height - (personagem[valorNumeroPersonagem.get("BromaxParado")].getHeight(this) * 3) - 38,
+                    getSize().height - (personagem[valorNumeroPersonagem.get("BromaxParado")].getHeight(this) * 3) - 32,
                     personagem[valorNumeroPersonagem.get("BromaxParado")].getWidth(this) * 3,
                     personagem[valorNumeroPersonagem.get("BromaxParado")].getHeight(this) * 3, this);
             Toolkit.getDefaultToolkit().sync();
         }
+    }
 
+    public void gravidade(){
+            int delay = 0; // delay de 5 seg.
+            int interval = 5; // intervalo de 1 seg.
+            Timer timer = new Timer();
+            timer.scheduleAtFixedRate(new TimerTask() {
+                public void run() {
+                    posY1++;
+                    repaint();
+                }
+            }, delay, interval);
     }
 
     ClienteFrame() {
         super("TowerFall");
         setResizable(false);
-        setLayout(new GridLayout());
         add(new Personagem());
+        gravidade();
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         pack();
         setVisible(true);
         addKeyListener(new KeyAdapter() {
-
             public void keyPressed(KeyEvent e) {
                 String inputValue = new String(varControle + " ");
                 // (número do cliente, botão apertado)
                 switch (e.getKeyCode()) {
                 case KeyEvent.VK_RIGHT:
-                    inputValue += posX1 + " VK_RIGHT ";
+                    if (varControle == cliente1)
+                        inputValue += posX1 + " VK_RIGHT ";
+                    else if (varControle == cliente2)
+                        inputValue += posX2 + " VK_RIGHT ";
                     os.println(inputValue);
                     // System.out.println(inputValue);
                     break;
@@ -96,6 +117,7 @@ public class ClienteFrame extends JFrame implements Runnable {
         }
 
         try {
+            // Verifica a variável de controle e define qual será o cliente
             if (varControle < 0) {
                 String inputCliente;
                 inputCliente = is.nextLine();
@@ -112,9 +134,9 @@ public class ClienteFrame extends JFrame implements Runnable {
                 vet = inputLine.split(" ");
                 int posAtualRecebida = Integer.parseInt(vet[posCliente]);
                 int numClienteRecebido = Integer.parseInt(vet[numCliente]);
-                if (numClienteRecebido == cliente1) 
+                if (numClienteRecebido == cliente1)
                     posX1 = posAtualRecebida;
-                 else if (numClienteRecebido == cliente2) 
+                else if (numClienteRecebido == cliente2)
                     posX2 = posAtualRecebida;
                 repaint();
             } while (!inputLine.equals(""));
@@ -129,23 +151,3 @@ public class ClienteFrame extends JFrame implements Runnable {
         }
     }
 }
-
-/*
- * JogoBase() { super("Trabalho"); setDefaultCloseOperation(EXIT_ON_CLOSE);
- * add(des); pack(); setVisible(true);
- * 
- * new Thread() { public void run() { while (true) { try { vida(); repaint();
- * sleep(50); } catch (InterruptedException ex) { } } } }.start();
- * 
- * addKeyListener(new KeyAdapter() {
- * 
- * public void keyPressed(KeyEvent e) { switch (e.getKeyCode()) { case
- * KeyEvent.VK_RIGHT: if (dir == -1) pos += 10 - img[estado].getWidth(null) * 3;
- * pos += 10; dir = 1; estado = ANDA0; break; case KeyEvent.VK_LEFT: if (dir ==
- * 1) pos -= 10 - img[estado].getWidth(null) * 3; // pos -=
- * 10-img[estado].getWidth(null); // tentou evitar o salto pos -= 10; dir = -1;
- * estado = ANDA0; break; case KeyEvent.VK_W: estado = SOCO0; break; }
- * System.out.println(pos); repaint(); }
- * 
- * }); }
- */
