@@ -10,20 +10,27 @@ import java.util.Timer;
 import javax.imageio.*;
 
 public class ClienteFrame extends JFrame implements Runnable {
-    Image personagem[] = new Image[20];
+    Image personagem[] = new Image[24];
     Image background[] = new Image[1];
     static PrintStream os = null;
-    int posX1 = 0; // Variável para posição X do personagem 1
-    int posX2 = 100; // Variável para posição X do personagem 2
-    int posY1 = 0;
-    int posY2 = 100;
+    int numClienteRecebidoControle1, numClienteRecebidoControle2;
+    int verificaQueda1 = 0, verificaQueda2 = 0;
+    int posX1 = 32;
+    int posY1 = 32;
+    int posX2 = 960;
+    int posY2 = 64;
     int varControle = -1; // Variável para saber qual cliente é
-    final int cliente1 = 0, cliente2 = 1, numCliente = 0, posClienteX = 1, posClienteY = 2, btCliente = 3;
+    final int cliente1 = 0, cliente2 = 1, numCliente = 0, posClienteX = 1, posClienteY = 2, btCliente = 3,
+            gravCliente = 4;
+    String estadoCliente1 = new String("Player1Parado"), estadoCliente2 = new String("Player2Parado");
 
     class Personagem extends JPanel {
         // String para nomes das imagens dos personagens e cenário
-        String nomePersonagem[] = { "RambroParado", "RambroMov1", "RambroMov2", "RambroQuaseParado", "BromaxParado",
-                "BromaxMov1", "BromaxMov2", "BromaxQuaseParado" };
+        String nomePersonagem[] = { "Player1Parado", "Player1Mov1", "Player1Mov2", "Player1Mov3", "Player1Mov4",
+                "Player1Mov5", "Player1Morte1", "Player1Morte2", "Player1Morte3", "Player1Morte4", "Player1Morte5",
+                "Player1Morte6", "Player2Parado", "Player2Mov1", "Player2Mov2", "Player2Mov3", "Player2Mov4",
+                "Player2Mov5", "Player2Morte1", "Player2Morte2", "Player2Morte3", "Player2Morte4", "Player2Morte5",
+                "Player2Morte6" };
         // Hashtable armazena os valores de acesso ao vetor de imagem
         Hashtable<String, Integer> valorNumeroPersonagem = new Hashtable<String, Integer>();
 
@@ -34,7 +41,7 @@ public class ClienteFrame extends JFrame implements Runnable {
                 background[0] = ImageIO.read(new File("img/bg/Background.png"));
                 // Lê todas as imagens da pasta img e coloca os valores da posição da imagem no
                 // vetor
-                for (int i = 0; i < 8; i++) {
+                for (int i = 0; i < 24; i++) {
                     personagem[i] = ImageIO.read(new File("img/player/" + nomePersonagem[i] + ".png"));
                     valorNumeroPersonagem.put(nomePersonagem[i], i);
                 }
@@ -48,34 +55,21 @@ public class ClienteFrame extends JFrame implements Runnable {
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
             g.drawImage(background[0], 0, 0, this);
-            g.drawImage(personagem[valorNumeroPersonagem.get("RambroParado")], posX1, posY1,
-                    personagem[valorNumeroPersonagem.get("RambroParado")].getWidth(this) * 3,
-                    personagem[valorNumeroPersonagem.get("RambroParado")].getHeight(this) * 3, this);
-            g.drawImage(personagem[valorNumeroPersonagem.get("BromaxParado")], posX2,
-                    getSize().height - (personagem[valorNumeroPersonagem.get("BromaxParado")].getHeight(this) * 3) - 32,
-                    personagem[valorNumeroPersonagem.get("BromaxParado")].getWidth(this) * 3,
-                    personagem[valorNumeroPersonagem.get("BromaxParado")].getHeight(this) * 3, this);
+            g.drawImage(personagem[valorNumeroPersonagem.get(estadoCliente1)], posX1, posY1,
+                    personagem[valorNumeroPersonagem.get(estadoCliente1)].getWidth(this) * 2,
+                    personagem[valorNumeroPersonagem.get(estadoCliente1)].getHeight(this) * 2, this);
+            g.drawImage(personagem[valorNumeroPersonagem.get(estadoCliente2)], posX2, posY2,
+                    personagem[valorNumeroPersonagem.get(estadoCliente2)].getWidth(this) * 2,
+                    personagem[valorNumeroPersonagem.get(estadoCliente2)].getHeight(this) * 2, this);
             Toolkit.getDefaultToolkit().sync();
         }
     }
 
-    /*
-    public void gravidade() { 
-        int delay = 0; // delay de 5 seg. 
-        int interval = 5; // intervalo de 1 seg. Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() { 
-         public void run() { 
-                posY1++;
-                repaint(); 
-        } }, delay, interval); 
-    }
-    */
-
     ClienteFrame() {
         super("TowerFall");
         setResizable(false);
+        gravidade();
         add(new Personagem());
-        // gravidade();
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         pack();
         setVisible(true);
@@ -86,32 +80,54 @@ public class ClienteFrame extends JFrame implements Runnable {
                 switch (e.getKeyCode()) {
                 case KeyEvent.VK_RIGHT:
                     if (varControle == cliente1)
-                        inputValue += posX1 + " " + posY1 + " VK_RIGHT ";
+                        inputValue += posX1 + " " + posY1 + " VK_RIGHT " + " 0 ";
                     else if (varControle == cliente2)
-                        inputValue += posX2 + " " + posY2 + " VK_RIGHT ";
+                        inputValue += posX2 + " " + posY2 + " VK_RIGHT " + " 0 ";
+                    os.println(inputValue);
+                    // System.out.println(inputValue);
+                    break;
+                case KeyEvent.VK_LEFT:
+                    if (varControle == cliente1)
+                        inputValue += posX1 + " " + posY1 + " VK_LEFT " + " 0 ";
+                    else if (varControle == cliente2)
+                        inputValue += posX2 + " " + posY2 + " VK_LEFT " + " 0 ";
                     os.println(inputValue);
                     // System.out.println(inputValue);
                     break;
                 }
             }
         });
-        //String inputVal = new String(varControle + " " + posX1 + " " + posY1 + " NULL ");
-        //os.println(inputVal);
-        
     }
 
     public static void main(String[] args) {
         new Thread(new ClienteFrame()).start();
     }
 
+    public void gravidade() {
+        int delay = 0; // delay de 5 seg.
+        int interval = 3; // intervalo de 1 seg.
+        Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                if (verificaQueda1 == 1 && numClienteRecebidoControle1 == cliente1) {
+                    posY1++;
+                }
+                if (verificaQueda2 == 1 && numClienteRecebidoControle2 == cliente2) {
+                    posY2++;
+                }
+                repaint();
+            }
+        }, delay, interval);
+    }
+
     public void run() {
         Socket socket = null;
         Scanner is = null;
+
         try {
-            socket = new Socket("25.79.169.156", 80);
+            socket = new Socket("127.0.0.1", 80);
             os = new PrintStream(socket.getOutputStream(), true); // Recebendo os dados que o servidor manda
             is = new Scanner(socket.getInputStream()); // Escaneia os dados fornecidos pelo cliente
-            
         } catch (UnknownHostException e) {
             System.err.println("Don't know about host.");
         } catch (IOException e) {
@@ -129,21 +145,22 @@ public class ClienteFrame extends JFrame implements Runnable {
             }
             String inputLine;
             String vet[] = new String[10];
-
             do {
                 inputLine = is.nextLine();
                 System.out.println(inputLine);
                 vet = inputLine.split(" ");
-
                 int posAtualRecebida = Integer.parseInt(vet[posClienteX]);
                 int numClienteRecebido = Integer.parseInt(vet[numCliente]);
-                int numAtualRecebidaY = Integer.parseInt(vet[posClienteY]);
-
-                if (numClienteRecebido == cliente1)
+                int gravRecebida = Integer.parseInt(vet[gravCliente]);
+                if (numClienteRecebido == cliente1) {
                     posX1 = posAtualRecebida;
-                else if (numClienteRecebido == cliente2)
+                    numClienteRecebidoControle1 = numClienteRecebido;
+                    verificaQueda1 = gravRecebida;
+                } else if (numClienteRecebido == cliente2) {
                     posX2 = posAtualRecebida;
-                //posY1 = numAtualRecebidaY;
+                    numClienteRecebidoControle2 = numClienteRecebido;
+                    verificaQueda2 = gravRecebida;
+                }
                 repaint();
             } while (!inputLine.equals(""));
 
