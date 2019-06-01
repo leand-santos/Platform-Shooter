@@ -18,8 +18,7 @@ public class ClienteFrame extends JFrame implements Runnable {
     int posY1 = 0;
     int posY2 = 100;
     int varControle = -1; // Variável para saber qual cliente é
-    final int cliente1 = 0, cliente2 = 1, numCliente = 0, posCliente = 1, btCliente = 2; // Constantes para facilitar a
-                                                                                         // leitura do código
+    final int cliente1 = 0, cliente2 = 1, numCliente = 0, posClienteX = 1, posClienteY = 2, btCliente = 3;
 
     class Personagem extends JPanel {
         // String para nomes das imagens dos personagens e cenário
@@ -60,23 +59,23 @@ public class ClienteFrame extends JFrame implements Runnable {
         }
     }
 
-    public void gravidade(){
-            int delay = 0; // delay de 5 seg.
-            int interval = 5; // intervalo de 1 seg.
-            Timer timer = new Timer();
-            timer.scheduleAtFixedRate(new TimerTask() {
-                public void run() {
-                    posY1++;
-                    repaint();
-                }
-            }, delay, interval);
+    /*
+    public void gravidade() { 
+        int delay = 0; // delay de 5 seg. 
+        int interval = 5; // intervalo de 1 seg. Timer timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() { 
+         public void run() { 
+                posY1++;
+                repaint(); 
+        } }, delay, interval); 
     }
+    */
 
     ClienteFrame() {
         super("TowerFall");
         setResizable(false);
         add(new Personagem());
-        gravidade();
+        // gravidade();
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         pack();
         setVisible(true);
@@ -87,15 +86,18 @@ public class ClienteFrame extends JFrame implements Runnable {
                 switch (e.getKeyCode()) {
                 case KeyEvent.VK_RIGHT:
                     if (varControle == cliente1)
-                        inputValue += posX1 + " VK_RIGHT ";
+                        inputValue += posX1 + " " + posY1 + " VK_RIGHT ";
                     else if (varControle == cliente2)
-                        inputValue += posX2 + " VK_RIGHT ";
+                        inputValue += posX2 + " " + posY2 + " VK_RIGHT ";
                     os.println(inputValue);
                     // System.out.println(inputValue);
                     break;
                 }
             }
         });
+        //String inputVal = new String(varControle + " " + posX1 + " " + posY1 + " NULL ");
+        //os.println(inputVal);
+        
     }
 
     public static void main(String[] args) {
@@ -105,11 +107,11 @@ public class ClienteFrame extends JFrame implements Runnable {
     public void run() {
         Socket socket = null;
         Scanner is = null;
-
         try {
             socket = new Socket("25.79.169.156", 80);
             os = new PrintStream(socket.getOutputStream(), true); // Recebendo os dados que o servidor manda
             is = new Scanner(socket.getInputStream()); // Escaneia os dados fornecidos pelo cliente
+            
         } catch (UnknownHostException e) {
             System.err.println("Don't know about host.");
         } catch (IOException e) {
@@ -132,12 +134,16 @@ public class ClienteFrame extends JFrame implements Runnable {
                 inputLine = is.nextLine();
                 System.out.println(inputLine);
                 vet = inputLine.split(" ");
-                int posAtualRecebida = Integer.parseInt(vet[posCliente]);
+
+                int posAtualRecebida = Integer.parseInt(vet[posClienteX]);
                 int numClienteRecebido = Integer.parseInt(vet[numCliente]);
+                int numAtualRecebidaY = Integer.parseInt(vet[posClienteY]);
+
                 if (numClienteRecebido == cliente1)
                     posX1 = posAtualRecebida;
                 else if (numClienteRecebido == cliente2)
                     posX2 = posAtualRecebida;
+                //posY1 = numAtualRecebidaY;
                 repaint();
             } while (!inputLine.equals(""));
 
