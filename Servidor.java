@@ -74,8 +74,8 @@ class Servindo extends Thread {
         matX2 = coordX2 / 32;
         matY1 = coordY1 / 32;
         matY2 = coordY2 / 32;
-        System.out.println("matX1 " + matX1 + " matY1 " + matY1 + " matX2 " + matX2 + " matY2 " + matY2 + " "
-                + posMap.matrizMapa[matX1][matY2] + " " + posMap.matrizMapa[matX2][matY2]);
+        //System.out.println("matX1 " + matX1 + " matY1 " + matY1 + " matX2 " + matX2 + " matY2 " + matY2 + " "
+        //        + posMap.matrizMapa[matX1][matY2] + " " + posMap.matrizMapa[matX2][matY2]);
         if (posMap.matrizMapa[matY1][matX1] == 0 || posMap.matrizMapa[matY2][matX2] == 0) {
             return " 0 ";
         }
@@ -96,6 +96,9 @@ class Servindo extends Thread {
                 int novaPosY = Integer.parseInt(vet[posClienteY]);
                 for (int i = 0; i < cont; i++) {
                     if (vet[btCliente].compareTo("A") == 0) {
+                        System.out.println(
+                                "Cliente " + vet[numCliente] + " posX " + vet[posClienteX] + " posY " + vet[posClienteY]
+                                        + " bt " + vet[btCliente] + " grav " + verificaGrav(novaPosX, novaPosY));
                         os[i].println(vet[numCliente] + " " + novaPosX + " " + vet[posClienteY] + " " + vet[btCliente]
                                 + verificaGrav(novaPosX, novaPosY));
                         os[i].flush();

@@ -102,10 +102,14 @@ public class ClienteFrame extends JFrame implements Runnable {
             public void run(){
                 try {
                     if(varControle == -1)
-                        Thread.sleep(5000);
+                    Thread.sleep(5000);
                     do{
+                        String inputVal = new String(varControle + " ");
                         Thread.sleep(10);
-                        String inputVal = new String(varControle + " " + posX1 + " " + posY1 + " A " + " 0 ");
+                        if (varControle == cliente1)
+                            inputVal += posX1 + " " + posY1 + " A " + " 0 ";
+                        if (varControle == cliente2)
+                            inputVal += posX2 + " " + posY2 + " A " + " 0 ";
                         os.println(inputVal);
                         if (verificaQueda1 == 1 && numClienteRecebidoControle1 == cliente1) {
                             posY1++;
@@ -175,7 +179,8 @@ public class ClienteFrame extends JFrame implements Runnable {
                     posX1 = posAtualRecebida;
                     numClienteRecebidoControle1 = numClienteRecebido;
                     verificaQueda1 = gravRecebida;
-                } else if (numClienteRecebido == cliente2) {
+                }
+                if (numClienteRecebido == cliente2) {
                     posX2 = posAtualRecebida;
                     numClienteRecebidoControle2 = numClienteRecebido;
                     verificaQueda2 = gravRecebida;
