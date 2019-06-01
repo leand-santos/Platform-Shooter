@@ -15,8 +15,8 @@ public class ClienteFrame extends JFrame implements Runnable {
     static PrintStream os = null;
     int numClienteRecebidoControle1, numClienteRecebidoControle2;
     int verificaQueda1 = 0, verificaQueda2 = 0;
-    int posX1 = 32;
-    int posY1 = 32;
+    int posX1 = 64;
+    int posY1 = 64;
     int posX2 = 960;
     int posY2 = 64;
     int varControle = -1; // Variável para saber qual cliente é
@@ -68,7 +68,7 @@ public class ClienteFrame extends JFrame implements Runnable {
     ClienteFrame() {
         super("TowerFall");
         setResizable(false);
-        gravidade();
+        // gravidade(os);
         add(new Personagem());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         pack();
@@ -97,27 +97,46 @@ public class ClienteFrame extends JFrame implements Runnable {
                 }
             }
         });
+        
+        new Thread(new Runnable(){
+            public void run(){
+                try {
+                    if(varControle == -1)
+                        Thread.sleep(5000);
+                    do{
+                        Thread.sleep(10);
+                        String inputVal = new String(varControle + " " + posX1 + " " + posY1 + " A " + " 0 ");
+                        os.println(inputVal);
+                        if (verificaQueda1 == 1 && numClienteRecebidoControle1 == cliente1) {
+                            posY1++;
+                        }
+                        if (verificaQueda2 == 1 && numClienteRecebidoControle2 == cliente2) {
+                            posY2++;
+                        }
+                        repaint();
+                    } while(true);
+                } catch (InterruptedException e) {
+    
+                }
+      
+            }
+            
+        }).start();
     }
+
+    /*
+     * public void gravidade(PrintStream os) { int delay = 0; // delay de 5 seg. int
+     * interval = 100; // intervalo de 1 seg. Timer timer = new Timer();
+     * timer.scheduleAtFixedRate(new TimerTask() { public void run() { String
+     * inputVal = new String(varControle + " " + posX1 + " " + posY1 + " NULL " +
+     * " 0 "); System.out.println("TTT"); os.println(inputVal); if (verificaQueda1
+     * == 1 && numClienteRecebidoControle1 == cliente1) { posY1++; } if
+     * (verificaQueda2 == 1 && numClienteRecebidoControle2 == cliente2) { posY2++; }
+     * repaint(); } }, delay, interval); }
+     */
 
     public static void main(String[] args) {
         new Thread(new ClienteFrame()).start();
-    }
-
-    public void gravidade() {
-        int delay = 0; // delay de 5 seg.
-        int interval = 100; // intervalo de 1 seg.
-        Timer timer = new Timer();
-        timer.scheduleAtFixedRate(new TimerTask() {
-            public void run() {
-                if (verificaQueda1 == 1 && numClienteRecebidoControle1 == cliente1) {
-                    posY1++;
-                }
-                if (verificaQueda2 == 1 && numClienteRecebidoControle2 == cliente2) {
-                    posY2++;
-                }
-                repaint();
-            }
-        }, delay, interval);
     }
 
     public void run() {
