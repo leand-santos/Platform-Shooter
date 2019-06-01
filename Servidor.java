@@ -56,25 +56,29 @@ class Servindo extends Thread {
         } catch (IOException erro) {
         }
     }
-    /*
-     * coordX1=posX; coordY1=posY+32; coordX2=posX+32; coordY2=coordY1;
-     * matX1=coordX1/32; matX2=coordX2/32; matY1=coordY1/32; matY2=coordY2/32;
-     */
 
     public String verificaGrav(int posX, int posY) {
         MatrizMapa posMap = new MatrizMapa();
-        int matX, matY, coordInicialX, coordInicialY, coordFinalX, coordFinalY;
-        coordInicialX = (posX - (posX % 32));
-        coordInicialY = (posY - (posY % 32));
-        matX = posX / 32;
+        int matX1,matX2, matY1, matY2, coordY1, coordY2,coordX1,coordX2;
+        /*matX = (posX - (posX % 32)) / 32;
+        matY = (posY - (posY % 32))/ 32;*/
+        /*matX = posX / 32;
         matY = posY / 32;
-        coordFinalX = posX + 32;
-        coordFinalY = posY + 32;
-        System.out.println(" VERIFICA " + matX + " " + matY);
-        if (posMap.matrizMapa[matX][matY] == 0 || posMap.matrizMapa[matX][matY] == 0) {
-            return " 1 ";
+        coordX = posX + 32;
+        coordY = posY + 32;*/
+        coordX1=posX;
+        coordY1=posY+32;
+        coordX2=posX+32;
+        coordY2=coordY1;
+        matX1=coordX1/32;
+        matX2=coordX2/32;
+        matY1=coordY1/32;
+        matY2=coordY2/32;
+        System.out.println("matX1 " + matX1 + " matY1 " + matY1 + " matX2 " + matX2 + " matY2 " + matY2 + " "+ posMap.matrizMapa[matX1][matY2]+" "+posMap.matrizMapa[matX2][matY2]);
+        if (posMap.matrizMapa[matY1][matX1] == 0 || posMap.matrizMapa[matY2][matX2]==0) {
+            return " 0 ";
         }
-        return " 0 ";
+        return " 1 ";
     }
 
     public void run() {
@@ -92,40 +96,39 @@ class Servindo extends Thread {
                 if (vet[gravCliente].compareTo("0") == 0 && cont >= 1) {
                     for (int i = 0; i < cont; i++) {
                         os[i].println(vet[numCliente] + " " + novaPosX + " " + vet[posClienteY] + " " + vet[btCliente]
-                                + verificaGrav(novaPosX, novaPosY));
+                        + verificaGrav(novaPosX, novaPosY));
                         os[i].flush();
                     }
                 }
                 for (int i = 0; i < cont; i++) {
                     if (vet[btCliente].compareTo("VK_RIGHT") == 0) { // retornar qual player é
                         novaPosX++;
-                        System.out.println(
-                                "Cliente " + vet[numCliente] + " posX " + vet[posClienteX] + " posY " + vet[posClienteY]
-                                        + " bt " + vet[btCliente] + " grav " + verificaGrav(novaPosX, novaPosY));
-                        /*
-                         * if (novaPosX < 224 - 45) { os[i].println(vet[numCliente] + " " + novaPosX +
-                         * " " + vet[posClienteY] + " " + vet[btCliente] + verificaGrav(novaPosX,
-                         * novaPosY)); os[i].flush(); } else { novaPosX--;
-                         */
-                        os[i].println(vet[numCliente] + " " + novaPosX + " " + vet[posClienteY] + " " + vet[btCliente]
-                                + verificaGrav(novaPosX, novaPosY));
-                        os[i].flush();
-                        // }
+                        System.out.println("Cliente " + vet[numCliente] + " posX " + vet[posClienteX] + " posY "
+                                + vet[posClienteY] + " bt " + vet[btCliente] + " grav " + verificaGrav(novaPosX, novaPosY));
+                        /*if (novaPosX < 224 - 45) {
+                            os[i].println(vet[numCliente] + " " + novaPosX + " " + vet[posClienteY] + " "
+                                    + vet[btCliente] + verificaGrav(novaPosX, novaPosY));
+                            os[i].flush();
+                        } else {
+                            novaPosX--;*/
+                            os[i].println(vet[numCliente] + " " + novaPosX + " " + vet[posClienteY] + " "
+                                    + vet[btCliente] + verificaGrav(novaPosX, novaPosY));
+                            os[i].flush();
+                        //}
                     }
                     if (vet[btCliente].compareTo("VK_LEFT") == 0) { // retornar qual player é
                         novaPosX--;
-                        System.out.println(
-                                "Cliente " + vet[numCliente] + " posX " + vet[posClienteX] + " posY " + vet[posClienteY]
-                                        + " bt " + vet[btCliente] + " grav " + verificaGrav(novaPosX, novaPosY));
-                        /*
-                         * if (novaPosX < 224 - 45) { os[i].println(vet[numCliente] + " " + novaPosX +
-                         * " " + vet[posClienteY] + " " + vet[btCliente] + verificaGrav(novaPosX,
-                         * novaPosY)); os[i].flush(); } else {
-                         */
-                        os[i].println(vet[numCliente] + " " + novaPosX + " " + vet[posClienteY] + " " + vet[btCliente]
-                                + verificaGrav(novaPosX, novaPosY));
-                        os[i].flush();
-                        // }
+                        System.out.println("Cliente " + vet[numCliente] + " posX " + vet[posClienteX] + " posY "
+                                + vet[posClienteY] + " bt " + vet[btCliente] + " grav " + verificaGrav(novaPosX, novaPosY));
+                        /*if (novaPosX < 224 - 45) {
+                            os[i].println(vet[numCliente] + " " + novaPosX + " " + vet[posClienteY] + " "
+                                    + vet[btCliente] + verificaGrav(novaPosX, novaPosY));
+                            os[i].flush();
+                        } else {*/
+                            os[i].println(vet[numCliente] + " " + novaPosX + " " + vet[posClienteY] + " "
+                                    + vet[btCliente] + verificaGrav(novaPosX, novaPosY));
+                            os[i].flush();
+                        //}
                     }
                 }
 

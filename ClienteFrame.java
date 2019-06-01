@@ -105,7 +105,7 @@ public class ClienteFrame extends JFrame implements Runnable {
 
     public void gravidade() {
         int delay = 0; // delay de 5 seg.
-        int interval = 3; // intervalo de 1 seg.
+        int interval = 100; // intervalo de 1 seg.
         Timer timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
             public void run() {
