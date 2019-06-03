@@ -13,8 +13,6 @@ public class ClienteFrame extends JFrame implements Runnable {
     Image personagem[] = new Image[24];
     Image background[] = new Image[1];
     static PrintStream os = null;
-    int numClienteRecebidoControle1, numClienteRecebidoControle2;
-    int verificaQueda1 = 0, verificaQueda2 = 0;
     int posX1 = 64;
     int posY1 = 64;
     int posX2 = 960;
@@ -97,13 +95,13 @@ public class ClienteFrame extends JFrame implements Runnable {
                 }
             }
         });
-        
-        new Thread(new Runnable(){
-            public void run(){
+
+        new Thread(new Runnable() {
+            public void run() {
                 try {
-                    if(varControle == -1)
-                    Thread.sleep(5000);
-                    do{
+                    if (varControle == -1)
+                        Thread.sleep(5000);
+                    do {
                         String inputVal = new String(varControle + " ");
                         Thread.sleep(10);
                         if (varControle == cliente1)
@@ -111,20 +109,19 @@ public class ClienteFrame extends JFrame implements Runnable {
                         if (varControle == cliente2)
                             inputVal += posX2 + " " + posY2 + " A " + " 0 ";
                         os.println(inputVal);
-                        if (verificaQueda1 == 1 && numClienteRecebidoControle1 == cliente1) {
+                        /*if (verificaQueda1 == 1 && numClienteRecebidoControle1 == cliente1) {
                             posY1++;
                         }
                         if (verificaQueda2 == 1 && numClienteRecebidoControle2 == cliente2) {
                             posY2++;
-                        }
-                        repaint();
-                    } while(true);
+                        }*/
+                    } while (true);
                 } catch (InterruptedException e) {
-    
+
                 }
-      
+
             }
-            
+
         }).start();
     }
 
@@ -172,20 +169,27 @@ public class ClienteFrame extends JFrame implements Runnable {
                 inputLine = is.nextLine();
                 System.out.println(inputLine);
                 vet = inputLine.split(" ");
-                int posAtualRecebida = Integer.parseInt(vet[posClienteX]);
+                int posAtualRecebidaX = Integer.parseInt(vet[posClienteX]);
+                int posAtualRecebidaY = Integer.parseInt(vet[posClienteY]);
                 int numClienteRecebido = Integer.parseInt(vet[numCliente]);
                 int gravRecebida = Integer.parseInt(vet[gravCliente]);
                 if (numClienteRecebido == cliente1) {
-                    posX1 = posAtualRecebida;
-                    numClienteRecebidoControle1 = numClienteRecebido;
-                    verificaQueda1 = gravRecebida;
+                    posX1 = posAtualRecebidaX;
+                    if (gravRecebida == 1) {
+                        posY1 = posAtualRecebidaY;
+                    }
                 }
                 if (numClienteRecebido == cliente2) {
-                    posX2 = posAtualRecebida;
-                    numClienteRecebidoControle2 = numClienteRecebido;
-                    verificaQueda2 = gravRecebida;
+                    posX2 = posAtualRecebidaX;
+                    if (gravRecebida == 1) {
+                        posY2 = posAtualRecebidaY;
+                    }
                 }
-                repaint();
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        repaint();
+                    }
+                });
             } while (!inputLine.equals(""));
 
             os.close();

@@ -96,24 +96,25 @@ class Servindo extends Thread {
                 int novaPosY = Integer.parseInt(vet[posClienteY]);
                 for (int i = 0; i < cont; i++) {
                     if (vet[btCliente].compareTo("A") == 0) {
+                        novaPosY++;
                         System.out.println(
-                                "Cliente " + vet[numCliente] + " posX " + vet[posClienteX] + " posY " + vet[posClienteY]
+                                "Cliente " + vet[numCliente] + " posX " + vet[posClienteX] + " posY " + novaPosY
                                         + " bt " + vet[btCliente] + " grav " + verificaGrav(novaPosX, novaPosY));
-                        os[i].println(vet[numCliente] + " " + novaPosX + " " + vet[posClienteY] + " " + vet[btCliente]
+                        os[i].println(vet[numCliente] + " " + novaPosX + " " + novaPosY + " " + vet[btCliente]
                                 + verificaGrav(novaPosX, novaPosY));
                         os[i].flush();
                     }
                     if (vet[btCliente].compareTo("VK_RIGHT") == 0) { // retornar qual player é
                         novaPosX++;
                         System.out.println(
-                                "Cliente " + vet[numCliente] + " posX " + vet[posClienteX] + " posY " + vet[posClienteY]
+                                "Cliente " + vet[numCliente] + " posX " + novaPosX + " posY " + vet[posClienteY]
                                         + " bt " + vet[btCliente] + " grav " + verificaGrav(novaPosX, novaPosY));
                         /*
                          * if (novaPosX < 224 - 45) { os[i].println(vet[numCliente] + " " + novaPosX +
                          * " " + vet[posClienteY] + " " + vet[btCliente] + verificaGrav(novaPosX,
                          * novaPosY)); os[i].flush(); } else { novaPosX--;
                          */
-                        os[i].println(vet[numCliente] + " " + novaPosX + " " + vet[posClienteY] + " " + vet[btCliente]
+                        os[i].println(vet[numCliente] + " " + novaPosX + " " + novaPosY + " " + vet[btCliente]
                                 + verificaGrav(novaPosX, novaPosY));
                         os[i].flush();
                         // }
@@ -121,14 +122,14 @@ class Servindo extends Thread {
                     if (vet[btCliente].compareTo("VK_LEFT") == 0) { // retornar qual player é
                         novaPosX--;
                         System.out.println(
-                                "Cliente " + vet[numCliente] + " posX " + vet[posClienteX] + " posY " + vet[posClienteY]
+                                "Cliente " + vet[numCliente] + " posX " + novaPosX + " posY " + vet[posClienteY]
                                         + " bt " + vet[btCliente] + " grav " + verificaGrav(novaPosX, novaPosY));
                         /*
                          * if (novaPosX < 224 - 45) { os[i].println(vet[numCliente] + " " + novaPosX +
                          * " " + vet[posClienteY] + " " + vet[btCliente] + verificaGrav(novaPosX,
                          * novaPosY)); os[i].flush(); } else {
                          */
-                        os[i].println(vet[numCliente] + " " + novaPosX + " " + vet[posClienteY] + " " + vet[btCliente]
+                        os[i].println(vet[numCliente] + " " + novaPosX + " " + novaPosY + " " + vet[btCliente]
                                 + verificaGrav(novaPosX, novaPosY));
                         os[i].flush();
                         // }
