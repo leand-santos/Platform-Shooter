@@ -60,12 +60,6 @@ class Servindo extends Thread {
     public String verificaGrav(int posX, int posY) {
         MatrizMapa posMap = new MatrizMapa();
         int matX1, matX2, matY1, matY2, coordY1, coordY2, coordX1, coordX2;
-        /*
-         * matX = (posX - (posX % 32)) / 32; matY = (posY - (posY % 32))/ 32;
-         */
-        /*
-         * matX = posX / 32; matY = posY / 32; coordX = posX + 32; coordY = posY + 32;
-         */
         coordX1 = posX;
         coordY1 = posY + 32;
         coordX2 = posX + 32;
@@ -109,11 +103,6 @@ class Servindo extends Thread {
                         System.out.println(
                                 "Cliente " + vet[numCliente] + " posX " + novaPosX + " posY " + vet[posClienteY]
                                         + " bt " + vet[btCliente] + " grav " + verificaGrav(novaPosX, novaPosY));
-                        /*
-                         * if (novaPosX < 224 - 45) { os[i].println(vet[numCliente] + " " + novaPosX +
-                         * " " + vet[posClienteY] + " " + vet[btCliente] + verificaGrav(novaPosX,
-                         * novaPosY)); os[i].flush(); } else { novaPosX--;
-                         */
                         os[i].println(vet[numCliente] + " " + novaPosX + " " + novaPosY + " " + vet[btCliente]
                                 + verificaGrav(novaPosX, novaPosY));
                         os[i].flush();
@@ -124,11 +113,6 @@ class Servindo extends Thread {
                         System.out.println(
                                 "Cliente " + vet[numCliente] + " posX " + novaPosX + " posY " + vet[posClienteY]
                                         + " bt " + vet[btCliente] + " grav " + verificaGrav(novaPosX, novaPosY));
-                        /*
-                         * if (novaPosX < 224 - 45) { os[i].println(vet[numCliente] + " " + novaPosX +
-                         * " " + vet[posClienteY] + " " + vet[btCliente] + verificaGrav(novaPosX,
-                         * novaPosY)); os[i].flush(); } else {
-                         */
                         os[i].println(vet[numCliente] + " " + novaPosX + " " + novaPosY + " " + vet[btCliente]
                                 + verificaGrav(novaPosX, novaPosY));
                         os[i].flush();

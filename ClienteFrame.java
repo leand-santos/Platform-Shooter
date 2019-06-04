@@ -20,7 +20,7 @@ public class ClienteFrame extends JFrame implements Runnable {
     int varControle = -1; // Variável para saber qual cliente é
     final int cliente1 = 0, cliente2 = 1, numCliente = 0, posClienteX = 1, posClienteY = 2, btCliente = 3,
             gravCliente = 4;
-    String estadoCliente1 = new String("Player1Parado"), estadoCliente2 = new String("Player2Parado");
+    String estadoCliente1 = new String("Player1Parado"), estadoCliente2 = new String("Player2Parado"), inputValue;
 
     class Personagem extends JPanel {
         // String para nomes das imagens dos personagens e cenário
@@ -73,7 +73,7 @@ public class ClienteFrame extends JFrame implements Runnable {
         setVisible(true);
         addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
-                String inputValue = new String(varControle + " ");
+                inputValue = new String(varControle + " ");
                 // (número do cliente, botão apertado)
                 switch (e.getKeyCode()) {
                 case KeyEvent.VK_RIGHT:
@@ -102,19 +102,13 @@ public class ClienteFrame extends JFrame implements Runnable {
                     if (varControle == -1)
                         Thread.sleep(5000);
                     do {
-                        String inputVal = new String(varControle + " ");
+                        inputValue = new String(varControle + " ");
                         Thread.sleep(10);
                         if (varControle == cliente1)
-                            inputVal += posX1 + " " + posY1 + " A " + " 0 ";
+                            inputValue += posX1 + " " + posY1 + " A " + " 0 ";
                         if (varControle == cliente2)
-                            inputVal += posX2 + " " + posY2 + " A " + " 0 ";
-                        os.println(inputVal);
-                        /*if (verificaQueda1 == 1 && numClienteRecebidoControle1 == cliente1) {
-                            posY1++;
-                        }
-                        if (verificaQueda2 == 1 && numClienteRecebidoControle2 == cliente2) {
-                            posY2++;
-                        }*/
+                            inputValue += posX2 + " " + posY2 + " A " + " 0 ";
+                        os.println(inputValue);
                     } while (true);
                 } catch (InterruptedException e) {
 
@@ -124,17 +118,6 @@ public class ClienteFrame extends JFrame implements Runnable {
 
         }).start();
     }
-
-    /*
-     * public void gravidade(PrintStream os) { int delay = 0; // delay de 5 seg. int
-     * interval = 100; // intervalo de 1 seg. Timer timer = new Timer();
-     * timer.scheduleAtFixedRate(new TimerTask() { public void run() { String
-     * inputVal = new String(varControle + " " + posX1 + " " + posY1 + " NULL " +
-     * " 0 "); System.out.println("TTT"); os.println(inputVal); if (verificaQueda1
-     * == 1 && numClienteRecebidoControle1 == cliente1) { posY1++; } if
-     * (verificaQueda2 == 1 && numClienteRecebidoControle2 == cliente2) { posY2++; }
-     * repaint(); } }, delay, interval); }
-     */
 
     public static void main(String[] args) {
         new Thread(new ClienteFrame()).start();
