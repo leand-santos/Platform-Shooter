@@ -18,8 +18,9 @@ public class ClienteFrame extends JFrame implements Runnable {
     int posX2 = 960;
     int posY2 = 64;
     int varControle = -1; // Variável para saber qual cliente é
-    final int cliente1 = 0, cliente2 = 1, numCliente = 0, posClienteX = 1, posClienteY = 2, btCliente = 3,
-            gravCliente = 4;
+    int gravidade, dirCliente1 = 1, dirCliente2 = 1;
+    final int size = 2, cliente1 = 0, cliente2 = 1, numCliente = 0, posClienteX = 1, posClienteY = 2, btCliente = 3,
+            gravCliente = 4, dirCliente = 5, estadoCliente = 6;
     String estadoCliente1 = new String("Player1Parado"), estadoCliente2 = new String("Player2Parado"), inputValue;
 
     class Personagem extends JPanel {
@@ -54,11 +55,11 @@ public class ClienteFrame extends JFrame implements Runnable {
             super.paintComponent(g);
             g.drawImage(background[0], 0, 0, this);
             g.drawImage(personagem[valorNumeroPersonagem.get(estadoCliente1)], posX1, posY1,
-                    personagem[valorNumeroPersonagem.get(estadoCliente1)].getWidth(this) * 2,
-                    personagem[valorNumeroPersonagem.get(estadoCliente1)].getHeight(this) * 2, this);
+                    personagem[valorNumeroPersonagem.get(estadoCliente1)].getWidth(this) * size * dirCliente1,
+                    personagem[valorNumeroPersonagem.get(estadoCliente1)].getHeight(this) * size, this);
             g.drawImage(personagem[valorNumeroPersonagem.get(estadoCliente2)], posX2, posY2,
-                    personagem[valorNumeroPersonagem.get(estadoCliente2)].getWidth(this) * 2,
-                    personagem[valorNumeroPersonagem.get(estadoCliente2)].getHeight(this) * 2, this);
+                    personagem[valorNumeroPersonagem.get(estadoCliente2)].getWidth(this) * size * dirCliente2,
+                    personagem[valorNumeroPersonagem.get(estadoCliente2)].getHeight(this) * size, this);
             Toolkit.getDefaultToolkit().sync();
         }
     }
@@ -78,17 +79,17 @@ public class ClienteFrame extends JFrame implements Runnable {
                 switch (e.getKeyCode()) {
                 case KeyEvent.VK_RIGHT:
                     if (varControle == cliente1)
-                        inputValue += posX1 + " " + posY1 + " VK_RIGHT " + " 0 ";
+                        inputValue += posX1 + " " + posY1 + " VK_RIGHT " + " 0 " + dirCliente1 + " " + estadoCliente1;
                     else if (varControle == cliente2)
-                        inputValue += posX2 + " " + posY2 + " VK_RIGHT " + " 0 ";
+                        inputValue += posX2 + " " + posY2 + " VK_RIGHT " + " 0 " + dirCliente2 + " " + estadoCliente2;
                     os.println(inputValue);
                     // System.out.println(inputValue);
                     break;
                 case KeyEvent.VK_LEFT:
                     if (varControle == cliente1)
-                        inputValue += posX1 + " " + posY1 + " VK_LEFT " + " 0 ";
+                        inputValue += posX1 + " " + posY1 + " VK_LEFT " + " 0 " + dirCliente2 + " " + estadoCliente2;
                     else if (varControle == cliente2)
-                        inputValue += posX2 + " " + posY2 + " VK_LEFT " + " 0 ";
+                        inputValue += posX2 + " " + posY2 + " VK_LEFT " + " 0 " + dirCliente2 + " " + estadoCliente2;
                     os.println(inputValue);
                     // System.out.println(inputValue);
                     break;
@@ -102,13 +103,15 @@ public class ClienteFrame extends JFrame implements Runnable {
                     if (varControle == -1)
                         Thread.sleep(5000);
                     do {
-                        inputValue = new String(varControle + " ");
-                        Thread.sleep(10);
-                        if (varControle == cliente1)
-                            inputValue += posX1 + " " + posY1 + " A " + " 0 ";
-                        if (varControle == cliente2)
-                            inputValue += posX2 + " " + posY2 + " A " + " 0 ";
-                        os.println(inputValue);
+                        if (gravidade == 1) {
+                            inputValue = new String(varControle + " ");
+                            Thread.sleep(30);
+                            if (varControle == cliente1)
+                                inputValue += posX1 + " " + posY1 + " A " + " 0 " + dirCliente1 + " " + estadoCliente1;
+                            if (varControle == cliente2)
+                                inputValue += posX2 + " " + posY2 + " A " + " 0 " + dirCliente2 + " " + estadoCliente2;
+                            os.println(inputValue);
+                        }
                     } while (true);
                 } catch (InterruptedException e) {
 
@@ -161,12 +164,14 @@ public class ClienteFrame extends JFrame implements Runnable {
                     if (gravRecebida == 1) {
                         posY1 = posAtualRecebidaY;
                     }
+                    gravidade = gravRecebida;
                 }
                 if (numClienteRecebido == cliente2) {
                     posX2 = posAtualRecebidaX;
                     if (gravRecebida == 1) {
                         posY2 = posAtualRecebidaY;
                     }
+                    gravidade = gravRecebida;
                 }
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run() {

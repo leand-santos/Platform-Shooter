@@ -41,11 +41,12 @@ class Servindo extends Thread {
             "Player1Mov5", "Player1Morte1", "Player1Morte2", "Player1Morte3", "Player1Morte4", "Player1Morte5",
             "Player1Morte6", "Player2Parado", "Player2Mov1", "Player2Mov2", "Player2Mov3", "Player2Mov4", "Player2Mov5",
             "Player2Morte1", "Player2Morte2", "Player2Morte3", "Player2Morte4", "Player2Morte5", "Player2Morte6" };
-    final int cliente1 = 0, cliente2 = 1, numCliente = 0, posClienteX = 1, posClienteY = 2, btCliente = 3,
-            gravCliente = 4;
+    final int anda = 3, cliente1 = 0, cliente2 = 1, numCliente = 0, posClienteX = 1, posClienteY = 2, btCliente = 3,
+            gravCliente = 4, dirCliente = 5, estadoCliente = 6;
     Socket clientSocket;
     static PrintStream os[] = new PrintStream[3];
     static int cont = 0;
+    String vet[] = new String[20];
 
     Servindo(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -57,7 +58,7 @@ class Servindo extends Thread {
         }
     }
 
-    public String verificaGrav(int posX, int posY) {
+    public int verificaGrav(int posX, int posY) {
         MatrizMapa posMap = new MatrizMapa();
         int matX1, matX2, matY1, matY2, coordY1, coordY2, coordX1, coordX2;
         coordX1 = posX;
@@ -68,12 +69,15 @@ class Servindo extends Thread {
         matX2 = coordX2 / 32;
         matY1 = coordY1 / 32;
         matY2 = coordY2 / 32;
-        //System.out.println("matX1 " + matX1 + " matY1 " + matY1 + " matX2 " + matX2 + " matY2 " + matY2 + " "
-        //        + posMap.matrizMapa[matX1][matY2] + " " + posMap.matrizMapa[matX2][matY2]);
-        if (posMap.matrizMapa[matY1][matX1] == 0 || posMap.matrizMapa[matY2][matX2] == 0) {
-            return " 0 ";
-        }
-        return " 1 ";
+        if (posMap.matrizMapa[matY1][matX1] == 0 || posMap.matrizMapa[matY2][matX2] == 0)
+            return 0;
+        return 1;
+    }
+    
+    public void enviaDados(int i, int novaPosX, int novaPosY) {
+        os[i].println(vet[numCliente] + " " + novaPosX + " " + novaPosY + " " + vet[btCliente] + " "
+                + verificaGrav(novaPosX, novaPosY) + " " + vet[dirCliente] + " " + vet[estadoCliente]);
+        os[i].flush();
     }
 
     public void run() {
@@ -81,45 +85,23 @@ class Servindo extends Thread {
             Scanner is = new Scanner(clientSocket.getInputStream());
             os[cont++] = new PrintStream(clientSocket.getOutputStream());
 
-            String inputLine, outputLine;
-            String vet[] = new String[10];
+            String inputLine;
             do { // distribuição para os clientes
                 inputLine = is.nextLine();
                 vet = inputLine.split(" ");
                 int novaPosX = Integer.parseInt(vet[posClienteX]);
                 int novaPosY = Integer.parseInt(vet[posClienteY]);
+                if (vet[btCliente].compareTo("A") == 0 || verificaGrav(novaPosX, novaPosY) == 1)
+                    novaPosY += anda;
+                if (vet[btCliente].compareTo("VK_RIGHT") == 0)
+                    novaPosX += anda;
+                if (vet[btCliente].compareTo("VK_LEFT") == 0)
+                    novaPosX -= anda;
+                System.out.println("Cliente " + vet[numCliente] + " posX " + novaPosX + " posY " + vet[posClienteY]
+                        + " bt " + vet[btCliente] + " grav " + verificaGrav(novaPosX, novaPosY));
                 for (int i = 0; i < cont; i++) {
-                    if (vet[btCliente].compareTo("A") == 0) {
-                        novaPosY++;
-                        System.out.println(
-                                "Cliente " + vet[numCliente] + " posX " + vet[posClienteX] + " posY " + novaPosY
-                                        + " bt " + vet[btCliente] + " grav " + verificaGrav(novaPosX, novaPosY));
-                        os[i].println(vet[numCliente] + " " + novaPosX + " " + novaPosY + " " + vet[btCliente]
-                                + verificaGrav(novaPosX, novaPosY));
-                        os[i].flush();
-                    }
-                    if (vet[btCliente].compareTo("VK_RIGHT") == 0) { // retornar qual player é
-                        novaPosX++;
-                        System.out.println(
-                                "Cliente " + vet[numCliente] + " posX " + novaPosX + " posY " + vet[posClienteY]
-                                        + " bt " + vet[btCliente] + " grav " + verificaGrav(novaPosX, novaPosY));
-                        os[i].println(vet[numCliente] + " " + novaPosX + " " + novaPosY + " " + vet[btCliente]
-                                + verificaGrav(novaPosX, novaPosY));
-                        os[i].flush();
-                        // }
-                    }
-                    if (vet[btCliente].compareTo("VK_LEFT") == 0) { // retornar qual player é
-                        novaPosX--;
-                        System.out.println(
-                                "Cliente " + vet[numCliente] + " posX " + novaPosX + " posY " + vet[posClienteY]
-                                        + " bt " + vet[btCliente] + " grav " + verificaGrav(novaPosX, novaPosY));
-                        os[i].println(vet[numCliente] + " " + novaPosX + " " + novaPosY + " " + vet[btCliente]
-                                + verificaGrav(novaPosX, novaPosY));
-                        os[i].flush();
-                        // }
-                    }
+                    enviaDados(i, novaPosX, novaPosY);
                 }
-
             } while (!inputLine.equals(""));
 
             for (int i = 0; i < cont; i++)
