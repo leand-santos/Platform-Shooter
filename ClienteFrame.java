@@ -79,17 +79,17 @@ public class ClienteFrame extends JFrame implements Runnable {
                 switch (e.getKeyCode()) {
                 case KeyEvent.VK_RIGHT:
                     if (varControle == cliente1)
-                        inputValue += posX1 + " " + posY1 + " VK_RIGHT " + " 0 " + dirCliente1 + " " + estadoCliente1;
+                        inputValue += posX1 + " " + posY1 + " VK_RIGHT " + "0 " + dirCliente1 + " " + estadoCliente1;
                     else if (varControle == cliente2)
-                        inputValue += posX2 + " " + posY2 + " VK_RIGHT " + " 0 " + dirCliente2 + " " + estadoCliente2;
+                        inputValue += posX2 + " " + posY2 + " VK_RIGHT " + "0 " + dirCliente2 + " " + estadoCliente2;
                     os.println(inputValue);
-                    // System.out.println(inputValue);
+                    System.out.println(inputValue);
                     break;
                 case KeyEvent.VK_LEFT:
                     if (varControle == cliente1)
-                        inputValue += posX1 + " " + posY1 + " VK_LEFT " + " 0 " + dirCliente2 + " " + estadoCliente2;
+                        inputValue += posX1 + " " + posY1 + " VK_LEFT " + "0 " + dirCliente1 + " " + estadoCliente1;
                     else if (varControle == cliente2)
-                        inputValue += posX2 + " " + posY2 + " VK_LEFT " + " 0 " + dirCliente2 + " " + estadoCliente2;
+                        inputValue += posX2 + " " + posY2 + " VK_LEFT " + "0 " + dirCliente2 + " " + estadoCliente2;
                     os.println(inputValue);
                     // System.out.println(inputValue);
                     break;
@@ -107,9 +107,9 @@ public class ClienteFrame extends JFrame implements Runnable {
                             inputValue = new String(varControle + " ");
                             Thread.sleep(30);
                             if (varControle == cliente1)
-                                inputValue += posX1 + " " + posY1 + " A " + " 0 " + dirCliente1 + " " + estadoCliente1;
+                                inputValue += posX1 + " " + posY1 + " A " + "0 " + dirCliente1 + " " + estadoCliente1;
                             if (varControle == cliente2)
-                                inputValue += posX2 + " " + posY2 + " A " + " 0 " + dirCliente2 + " " + estadoCliente2;
+                                inputValue += posX2 + " " + posY2 + " A " + "0 " + dirCliente2 + " " + estadoCliente2;
                             os.println(inputValue);
                         }
                     } while (true);
@@ -159,15 +159,20 @@ public class ClienteFrame extends JFrame implements Runnable {
                 int posAtualRecebidaY = Integer.parseInt(vet[posClienteY]);
                 int numClienteRecebido = Integer.parseInt(vet[numCliente]);
                 int gravRecebida = Integer.parseInt(vet[gravCliente]);
+                int dirClienteRecebido = Integer.parseInt(vet[dirCliente]);
                 if (numClienteRecebido == cliente1) {
                     posX1 = posAtualRecebidaX;
+                    estadoCliente1 = vet[estadoCliente];
+                    dirCliente1 = dirClienteRecebido;
                     if (gravRecebida == 1) {
                         posY1 = posAtualRecebidaY;
                     }
                     gravidade = gravRecebida;
                 }
-                if (numClienteRecebido == cliente2) {
+                else if (numClienteRecebido == cliente2) {
                     posX2 = posAtualRecebidaX;
+                    estadoCliente2 = vet[estadoCliente];
+                    dirCliente2 = dirClienteRecebido;
                     if (gravRecebida == 1) {
                         posY2 = posAtualRecebidaY;
                     }
