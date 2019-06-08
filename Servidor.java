@@ -85,8 +85,8 @@ class Servindo extends Thread {
     public int verificaWallDir(int posX, int posY) {
         MatrizMapa posMap = new MatrizMapa();
         int matX1, matX2, matY1, matY2;
-        matX1 = (posY + 32) / 32;
-        matY1 = posX / 32;
+        matX1 = (posX + 32) / 32;
+        matY1 = posY / 32;
         matX2 = (posX + 32) / 32;
         matY2 = (posY + 32) / 32;
         if (posMap.matrizMapa[matY1][matX1] == 0 || posMap.matrizMapa[matY2][matX2] == 0)
@@ -115,7 +115,7 @@ class Servindo extends Thread {
                     /*
                      * if (vet[dirCliente].compareTo("-1") == 0) novaPosX += anda - 32; else
                      */
-                    if (verificaWallDir(novaPosX, novaPosY) == 0)
+                    if (verificaWallDir(novaPosX, novaPosY) == 1)
                         novaPosX += anda;
                     direcao = 1;
                 }
@@ -123,7 +123,7 @@ class Servindo extends Thread {
                     /*
                      * if (vet[dirCliente].compareTo("1") == 0) novaPosX -= anda - 32; else
                      */
-                    if (verificaWallEsq(novaPosX, novaPosY) == 0)
+                    if (verificaWallEsq(novaPosX, novaPosY) == 1)
                         novaPosX -= anda;
                     direcao = -1;
                 }

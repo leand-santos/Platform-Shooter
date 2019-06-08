@@ -14,7 +14,7 @@ public class ClienteFrame extends JFrame implements Runnable {
     Image background[] = new Image[1];
     static PrintStream os = null;
     int posX1 = 64;
-    int posY1 = 64;
+    int posY1 = 63;
     int posX2 = 960;
     int posY2 = 64;
     int varControle = -1; // Variável para saber qual cliente é
