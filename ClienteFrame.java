@@ -18,7 +18,7 @@ public class ClienteFrame extends JFrame implements Runnable {
     int posX2 = 960;
     int posY2 = 64;
     int varControle = -1; // Variável para saber qual cliente é
-    int gravidade, dirCliente1 = 1, dirCliente2 = 1;
+    int gravidade, dirCliente1 = 1, dirCliente2 = 1, estadoClient1 = 0, estadoClient2 = 0;
     final int size = 2, cliente1 = 0, cliente2 = 1, numCliente = 0, posClienteX = 1, posClienteY = 2, btCliente = 3,
             gravCliente = 4, dirCliente = 5, estadoCliente = 6;
     String estadoCliente1 = new String("Player1Parado"), estadoCliente2 = new String("Player2Parado"), inputValue;
@@ -63,7 +63,6 @@ public class ClienteFrame extends JFrame implements Runnable {
             Toolkit.getDefaultToolkit().sync();
         }
     }
-
     ClienteFrame() {
         super("TowerFall");
         setResizable(false);
@@ -79,17 +78,17 @@ public class ClienteFrame extends JFrame implements Runnable {
                 switch (e.getKeyCode()) {
                 case KeyEvent.VK_RIGHT:
                     if (varControle == cliente1)
-                        inputValue += posX1 + " " + posY1 + " VK_RIGHT " + "0 " + dirCliente1 + " " + estadoCliente1;
+                        inputValue += posX1 + " " + posY1 + " VK_RIGHT " + "0 " + dirCliente1 + " " + estadoClient1;
                     else if (varControle == cliente2)
-                        inputValue += posX2 + " " + posY2 + " VK_RIGHT " + "0 " + dirCliente2 + " " + estadoCliente2;
+                        inputValue += posX2 + " " + posY2 + " VK_RIGHT " + "0 " + dirCliente2 + " " + estadoClient2;
                     os.println(inputValue);
                     System.out.println(inputValue);
                     break;
                 case KeyEvent.VK_LEFT:
                     if (varControle == cliente1)
-                        inputValue += posX1 + " " + posY1 + " VK_LEFT " + "0 " + dirCliente1 + " " + estadoCliente1;
+                        inputValue += posX1 + " " + posY1 + " VK_LEFT " + "0 " + dirCliente1 + " " + estadoClient1;
                     else if (varControle == cliente2)
-                        inputValue += posX2 + " " + posY2 + " VK_LEFT " + "0 " + dirCliente2 + " " + estadoCliente2;
+                        inputValue += posX2 + " " + posY2 + " VK_LEFT " + "0 " + dirCliente2 + " " + estadoClient2;
                     os.println(inputValue);
                     // System.out.println(inputValue);
                     break;
@@ -107,9 +106,9 @@ public class ClienteFrame extends JFrame implements Runnable {
                             inputValue = new String(varControle + " ");
                             Thread.sleep(30);
                             if (varControle == cliente1)
-                                inputValue += posX1 + " " + posY1 + " A " + "0 " + dirCliente1 + " " + estadoCliente1;
+                                inputValue += posX1 + " " + posY1 + " A " + "0 " + dirCliente1 + " " + "0";
                             if (varControle == cliente2)
-                                inputValue += posX2 + " " + posY2 + " A " + "0 " + dirCliente2 + " " + estadoCliente2;
+                                inputValue += posX2 + " " + posY2 + " A " + "0 " + dirCliente2 + " " + "0";
                             os.println(inputValue);
                         }
                     } while (true);
@@ -124,6 +123,33 @@ public class ClienteFrame extends JFrame implements Runnable {
 
     public static void main(String[] args) {
         new Thread(new ClienteFrame()).start();
+    }
+
+    public void verificaEstado(int estado, int client) {
+
+        if (client == 1) {
+            if (estado == 1)
+                estadoCliente1 = "Player1Mov1";
+            else if (estado == 2)
+                estadoCliente1 = "Player1Mov2";
+            else if (estado == 3)
+                estadoCliente1 = "Player1Mov3";
+            else if (estado == 4)
+                estadoCliente1 = "Player1Mov4";
+            else if (estado == 5)
+                estadoCliente1 = "Player1Mov5";
+        } else {
+            if (estado == 1)
+                estadoCliente2 = "Player2Mov1";
+            else if (estado == 2)
+                estadoCliente2 = "Player2Mov2";
+            else if (estado == 3)
+                estadoCliente2 = "Player2Mov3";
+            else if (estado == 4)
+                estadoCliente2 = "Player2Mov4";
+            else if (estado == 5)
+                estadoCliente2 = "Player2Mov5";
+        }
     }
 
     public void run() {
@@ -160,19 +186,21 @@ public class ClienteFrame extends JFrame implements Runnable {
                 int numClienteRecebido = Integer.parseInt(vet[numCliente]);
                 int gravRecebida = Integer.parseInt(vet[gravCliente]);
                 int dirClienteRecebido = Integer.parseInt(vet[dirCliente]);
+                int estClienteRecebido = Integer.parseInt(vet[estadoCliente]);
                 if (numClienteRecebido == cliente1) {
                     posX1 = posAtualRecebidaX;
                     estadoCliente1 = vet[estadoCliente];
                     dirCliente1 = dirClienteRecebido;
+                    verificaEstado(estClienteRecebido, 1);
                     if (gravRecebida == 1) {
                         posY1 = posAtualRecebidaY;
                     }
                     gravidade = gravRecebida;
-                }
-                else if (numClienteRecebido == cliente2) {
+                } else if (numClienteRecebido == cliente2) {
                     posX2 = posAtualRecebidaX;
                     estadoCliente2 = vet[estadoCliente];
                     dirCliente2 = dirClienteRecebido;
+                    verificaEstado(estClienteRecebido, 2);
                     if (gravRecebida == 1) {
                         posY2 = posAtualRecebidaY;
                     }
