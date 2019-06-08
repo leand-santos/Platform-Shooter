@@ -82,6 +82,7 @@ class Servindo extends Thread {
             return 0;
         return 1;
     }
+
     public int verificaWallDir(int posX, int posY) {
         MatrizMapa posMap = new MatrizMapa();
         int matX1, matX2, matY1, matY2;
@@ -111,22 +112,34 @@ class Servindo extends Thread {
                 vet = inputLine.split(" ");
                 int novaPosX = Integer.parseInt(vet[posClienteX]);
                 int novaPosY = Integer.parseInt(vet[posClienteY]);
+
                 if (vet[btCliente].compareTo("VK_RIGHT") == 0) {
-                    /*
-                     * if (vet[dirCliente].compareTo("-1") == 0) novaPosX += anda - 32; else
-                     */
-                    if (verificaWallDir(novaPosX, novaPosY) == 1)
+
+                    if (vet[dirCliente].compareTo("-1") == 0)
+                        novaPosX += anda - 32;
+                    else
                         novaPosX += anda;
+
+                    if (verificaWallDir(novaPosX, novaPosY) == 0 && vet[dirCliente].compareTo("-1") == 0)
+                        novaPosX -= anda + 32;
+                    else if (verificaWallDir(novaPosX, novaPosY) == 0)
+                        novaPosX -= anda;
                     direcao = 1;
                 }
                 if (vet[btCliente].compareTo("VK_LEFT") == 0) {
-                    /*
-                     * if (vet[dirCliente].compareTo("1") == 0) novaPosX -= anda - 32; else
-                     */
-                    if (verificaWallEsq(novaPosX, novaPosY) == 1)
+
+                    if (vet[dirCliente].compareTo("1") == 0)
+                        novaPosX -= anda - 32;
+                    else
                         novaPosX -= anda;
+
+                    if (verificaWallEsq(novaPosX, novaPosY) == 0 && vet[dirCliente].compareTo("1") == 0)
+                        novaPosX += anda + 32;
+                    else if (verificaWallEsq(novaPosX - 32, novaPosY) == 0)
+                        novaPosX += anda;
                     direcao = -1;
                 }
+
                 if (vet[numCliente].compareTo("0") == 0) {
                     estado = estadoClient1;
                     estadoClient1++;
@@ -139,8 +152,9 @@ class Servindo extends Thread {
                     if (estadoClient2 == 5)
                         estadoClient2 = 1;
                 }
-                if (vet[btCliente].compareTo("A") == 0 || verificaGrav(novaPosX, novaPosY) == 1)
+                if (vet[btCliente].compareTo("A") == 0 || verificaGrav(novaPosX, novaPosY) == 1) {
                     novaPosY += anda;
+                }
                 System.out.println("Cliente " + vet[numCliente] + " posX " + novaPosX + " posY " + vet[posClienteY]
                         + " bt " + vet[btCliente] + " grav " + verificaGrav(novaPosX, novaPosY) + " dir " + direcao
                         + " est1 " + estadoClient1 + " est2 " + estadoClient2);
