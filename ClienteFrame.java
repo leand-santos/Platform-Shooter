@@ -100,11 +100,11 @@ public class ClienteFrame extends JFrame implements Runnable {
             public void run() {
                 try {
                     if (varControle == -1)
-                        Thread.sleep(5000);
+                        Thread.sleep(200);
                     do {
+                        Thread.sleep(30);
                         if (gravidade == 1) {
                             inputValue = new String(varControle + " ");
-                            Thread.sleep(30);
                             if (varControle == cliente1)
                                 inputValue += posX1 + " " + posY1 + " A " + "0 " + dirCliente1 + " " + "0";
                             if (varControle == cliente2)
