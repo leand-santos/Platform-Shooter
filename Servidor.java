@@ -47,7 +47,8 @@ class Servindo extends Thread {
     static PrintStream os[] = new PrintStream[3];
     static int cont = 0;
     String vet[] = new String[20];
-    int direcao, estadoClient1 = 1, estadoClient2 = 1, estado1, estado2, posX;
+    int direcao, estadoClient1 = 1, estadoClient2 = 1, estado1, estado2, posX, posY;
+    boolean spaceEstaApertada = false;
 
     Servindo(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -69,7 +70,7 @@ class Servindo extends Thread {
             matY2 = (posY + 32) / 32;
         } else {
             matX2 = (posX - 32) / 32;
-            matY2 = (posY - 32) / 32;
+            matY2 = (posY + 32) / 32;
         }
         if (matX1 >= 32 || matY1 >= 22 || matX2 >= 32 || matY2 >= 22) {
             if (matX1 >= 32)
@@ -148,34 +149,27 @@ class Servindo extends Thread {
                 int novaPosX = Integer.parseInt(vet[posClienteX]);
                 int novaPosY = Integer.parseInt(vet[posClienteY]);
                 int cliente = Integer.parseInt(vet[numCliente]);
+                posY = novaPosY;
 
-                if (vet[btCliente].compareTo("VK_RIGHT") == 0) {
-
+                if (vet[btCliente].compareTo("RIGHT") == 0) {
                     if (vet[dirCliente].compareTo("-1") == 0)
-                        novaPosX += anda - 32;
-                    else
+                        novaPosX -= 32;
+                    if (verificaWallDir(novaPosX, novaPosY) == 1)
                         novaPosX += anda;
                     posX = novaPosX;
-
-                    if (verificaWallDir(novaPosX, novaPosY) == 0 && vet[dirCliente].compareTo("-1") == 0)
-                        novaPosX -= anda + 32;
-                    else if (verificaWallDir(novaPosX, novaPosY) == 0)
-                        novaPosX -= anda;
                     direcao = 1;
                 }
-                if (vet[btCliente].compareTo("VK_LEFT") == 0) {
-
+                if (vet[btCliente].compareTo("LEFT") == 0) {
                     if (vet[dirCliente].compareTo("1") == 0)
-                        novaPosX -= anda - 32;
-                    else
+                        novaPosX += 32;
+                    if (verificaWallEsq(novaPosX - 32, novaPosY) == 1)
                         novaPosX -= anda;
                     posX = novaPosX;
-
-                    if (verificaWallEsq(novaPosX, novaPosY) == 0 && vet[dirCliente].compareTo("1") == 0)
-                        novaPosX += anda + 32;
-                    else if (verificaWallEsq(novaPosX - 32, novaPosY) == 0)
-                        novaPosX += anda;
                     direcao = -1;
+                }
+
+                if (vet[btCliente].compareTo("SPACE") == 0) {
+                    spaceEstaApertada = true;
                 }
 
                 if (vet[numCliente].compareTo("0") == 0 && vet[btCliente].compareTo("A") != 0) {
@@ -190,7 +184,7 @@ class Servindo extends Thread {
                     if (estadoClient2 == 5)
                         estadoClient2 = 1;
                 }
-                if (vet[btCliente].compareTo("A") == 0 || verificaGrav(posX, novaPosY, direcao) == 1)
+                if ((vet[btCliente].compareTo("A") == 0 || verificaGrav(posX, novaPosY, direcao) == 1) && !spaceEstaApertada)
                     novaPosY += anda;
                 System.out.println("Cliente " + vet[numCliente] + " posX " + novaPosX + " posY " + vet[posClienteY]
                         + " bt " + vet[btCliente] + " grav " + verificaGrav(novaPosX, novaPosY, direcao) + " dir "
@@ -202,7 +196,6 @@ class Servindo extends Thread {
                         enviaDados(i, novaPosX, novaPosY, estado2);
                     else
                         enviaDados(i, novaPosX, novaPosY, 0);
-
                 }
             } while (!inputLine.equals(""));
 

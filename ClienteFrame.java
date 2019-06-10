@@ -78,21 +78,28 @@ public class ClienteFrame extends JFrame implements Runnable {
                 inputValue = new String(varControle + " ");
                 // (número do cliente, botão apertado)
                 switch (e.getKeyCode()) {
-                case KeyEvent.VK_RIGHT:
+                case KeyEvent.VK_D:
                     if (varControle == cliente1)
-                        inputValue += posX1 + " " + posY1 + " VK_RIGHT " + "0 " + dirCliente1 + " " + estadoClient1;
+                        inputValue += posX1 + " " + posY1 + " RIGHT " + "0 " + dirCliente1 + " " + estadoClient1;
                     else if (varControle == cliente2)
-                        inputValue += posX2 + " " + posY2 + " VK_RIGHT " + "0 " + dirCliente2 + " " + estadoClient2;
+                        inputValue += posX2 + " " + posY2 + " RIGHT " + "0 " + dirCliente2 + " " + estadoClient2;
                     os.println(inputValue);
                     // System.out.println(inputValue);
                     break;
-                case KeyEvent.VK_LEFT:
+                case KeyEvent.VK_A:
                     if (varControle == cliente1)
-                        inputValue += posX1 + " " + posY1 + " VK_LEFT " + "0 " + dirCliente1 + " " + estadoClient1;
+                        inputValue += posX1 + " " + posY1 + " LEFT " + "0 " + dirCliente1 + " " + estadoClient1;
                     else if (varControle == cliente2)
-                        inputValue += posX2 + " " + posY2 + " VK_LEFT " + "0 " + dirCliente2 + " " + estadoClient2;
+                        inputValue += posX2 + " " + posY2 + " LEFT " + "0 " + dirCliente2 + " " + estadoClient2;
                     os.println(inputValue);
                     // System.out.println(inputValue);
+                    break;
+                case KeyEvent.VK_SPACE:
+                    if (varControle == cliente1)
+                        inputValue += posX1 + " " + posY1 + " SPACE " + "0 " + dirCliente1 + " " + estadoClient1;
+                    else if (varControle == cliente2)
+                        inputValue += posX2 + " " + posY2 + " SPACE " + "0 " + dirCliente2 + " " + estadoClient2;
+                    os.println(inputValue);
                     break;
                 }
             }
