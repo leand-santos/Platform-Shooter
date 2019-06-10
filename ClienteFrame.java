@@ -101,6 +101,13 @@ public class ClienteFrame extends JFrame implements Runnable {
                         inputValue += posX2 + " " + posY2 + " SPACE " + "0 " + dirCliente2 + " " + estadoClient2;
                     os.println(inputValue);
                     break;
+                case (KeyEvent.VK_SPACE) && (KeyEvent.VK_D):
+                    if (varControle == cliente1)
+                        inputValue += posX1 + " " + posY1 + " SPACE " + "0 " + dirCliente1 + " " + estadoClient1;
+                    else if (varControle == cliente2)
+                        inputValue += posX2 + " " + posY2 + " SPACE " + "0 " + dirCliente2 + " " + estadoClient2;
+                    os.println(inputValue);
+                    break;
                 }
             }
         });

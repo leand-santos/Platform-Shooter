@@ -49,6 +49,7 @@ class Servindo extends Thread {
     String vet[] = new String[20];
     int direcao, estadoClient1 = 1, estadoClient2 = 1, estado1, estado2, posX, posY;
     boolean spaceEstaApertada = false;
+    int contPulo;
 
     Servindo(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -170,6 +171,7 @@ class Servindo extends Thread {
 
                 if (vet[btCliente].compareTo("SPACE") == 0) {
                     spaceEstaApertada = true;
+                    contPulo = 0;
                 }
 
                 if (vet[numCliente].compareTo("0") == 0 && vet[btCliente].compareTo("A") != 0) {
@@ -184,8 +186,15 @@ class Servindo extends Thread {
                     if (estadoClient2 == 5)
                         estadoClient2 = 1;
                 }
-                if ((vet[btCliente].compareTo("A") == 0 || verificaGrav(posX, novaPosY, direcao) == 1) && !spaceEstaApertada)
+                if (verificaGrav(posX, novaPosY, direcao) == 1 && !spaceEstaApertada)
                     novaPosY += anda;
+                else if (verificaGrav(posX, novaPosY, direcao) == 1 && spaceEstaApertada) {
+                    novaPosY -= anda;
+                    contPulo++;
+                    System.out.println(contPulo);
+                    if (contPulo == 30)
+                        spaceEstaApertada = false;
+                }
                 System.out.println("Cliente " + vet[numCliente] + " posX " + novaPosX + " posY " + vet[posClienteY]
                         + " bt " + vet[btCliente] + " grav " + verificaGrav(novaPosX, novaPosY, direcao) + " dir "
                         + direcao + " est1 " + estadoClient1 + " est2 " + estadoClient2);
