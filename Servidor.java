@@ -152,9 +152,11 @@ class Servindo extends Thread {
                     if (estadoClient2 == 5)
                         estadoClient2 = 1;
                 }
-                if (vet[btCliente].compareTo("A") == 0 || verificaGrav(novaPosX, novaPosY) == 1) {
+                if (vet[btCliente].compareTo("A") == 0 && verificaGrav(novaPosX, novaPosY) == 1)
                     novaPosY += anda;
-                }
+                else if (vet[btCliente].compareTo("VK_RIGHT") == 0
+                        || vet[btCliente].compareTo("VK_LEFT") == 0 && verificaGrav(novaPosX, novaPosY) == 1)
+                    novaPosY += anda;
                 System.out.println("Cliente " + vet[numCliente] + " posX " + novaPosX + " posY " + vet[posClienteY]
                         + " bt " + vet[btCliente] + " grav " + verificaGrav(novaPosX, novaPosY) + " dir " + direcao
                         + " est1 " + estadoClient1 + " est2 " + estadoClient2);
