@@ -47,7 +47,7 @@ class Servindo extends Thread {
     static PrintStream os[] = new PrintStream[3];
     static int cont = 0;
     String vet[] = new String[20];
-    int direcao, estadoClient1 = 1, estadoClient2 = 1, estado;
+    int direcao, estadoClient1 = 1, estadoClient2 = 1, estado1, estado2;
 
     Servindo(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -59,13 +59,28 @@ class Servindo extends Thread {
         }
     }
 
-    public int verificaGrav(int posX, int posY) {
+    public int verificaGrav(int posX, int posY, int direcao) {
         MatrizMapa posMap = new MatrizMapa();
         int matX1, matX2, matY1, matY2;
         matX1 = posX / 32;
-        matX2 = (posX + 32) / 32;
         matY1 = (posY + 32) / 32;
-        matY2 = (posY + 32) / 32;
+        if (direcao == 1) {
+            matX2 = (posX + 32) / 32;
+            matY2 = (posY + 32) / 32;
+        } else {
+            matX2 = (posX - 32) / 32;
+            matY2 = (posY - 32) / 32;
+        }
+        if (matX1 >= 32 || matY1 >= 22 || matX2 >= 32 || matY2 >= 22) {
+            if (matX1 >= 32)
+                matX1 = 31;
+            if (matY1 >= 32)
+                matY1 = 21;
+            if (matX2 >= 32)
+                matX2 = 31;
+            if (matY2 >= 32)
+                matY2 = 21;
+        }
         if (posMap.matrizMapa[matY1][matX1] == 0 || posMap.matrizMapa[matY2][matX2] == 0)
             return 0;
         return 1;
@@ -78,6 +93,16 @@ class Servindo extends Thread {
         matY1 = (posY + 32) / 32;
         matX2 = posX / 32;
         matY2 = posY / 32;
+        if (matX1 >= 32 || matY1 >= 22 || matX2 >= 32 || matY2 >= 22) {
+            if (matX1 >= 32)
+                matX1 = 31;
+            if (matY1 >= 32)
+                matY1 = 21;
+            if (matX2 >= 32)
+                matX2 = 31;
+            if (matY2 >= 32)
+                matY2 = 21;
+        }
         if (posMap.matrizMapa[matY1][matX1] == 0 || posMap.matrizMapa[matY2][matX2] == 0)
             return 0;
         return 1;
@@ -90,14 +115,24 @@ class Servindo extends Thread {
         matY1 = posY / 32;
         matX2 = (posX + 32) / 32;
         matY2 = (posY + 32) / 32;
+        if (matX1 >= 32 || matY1 >= 22 || matX2 >= 32 || matY2 >= 22) {
+            if (matX1 >= 32)
+                matX1 = 31;
+            if (matY1 >= 32)
+                matY1 = 21;
+            if (matX2 >= 32)
+                matX2 = 31;
+            if (matY2 >= 32)
+                matY2 = 21;
+        }
         if (posMap.matrizMapa[matY1][matX1] == 0 || posMap.matrizMapa[matY2][matX2] == 0)
             return 0;
         return 1;
     }
 
-    public void enviaDados(int i, int novaPosX, int novaPosY) {
+    public void enviaDados(int i, int novaPosX, int novaPosY, int est) {
         os[i].println(vet[numCliente] + " " + novaPosX + " " + novaPosY + " " + vet[btCliente] + " "
-                + verificaGrav(novaPosX, novaPosY) + " " + direcao + " " + estado);
+                + verificaGrav(novaPosX, novaPosY, direcao) + " " + direcao + " " + est);
         os[i].flush();
     }
 
@@ -112,6 +147,7 @@ class Servindo extends Thread {
                 vet = inputLine.split(" ");
                 int novaPosX = Integer.parseInt(vet[posClienteX]);
                 int novaPosY = Integer.parseInt(vet[posClienteY]);
+                int cliente = Integer.parseInt(vet[numCliente]);
 
                 if (vet[btCliente].compareTo("VK_RIGHT") == 0) {
 
@@ -140,25 +176,31 @@ class Servindo extends Thread {
                     direcao = -1;
                 }
 
-                if (vet[numCliente].compareTo("0") == 0) {
-                    estado = estadoClient1;
+                if (vet[numCliente].compareTo("0") == 0 && vet[btCliente].compareTo("A") != 0) {
+                    estado1 = estadoClient1;
                     estadoClient1++;
                     if (estadoClient1 == 5)
                         estadoClient1 = 1;
                 }
-                if (vet[numCliente].compareTo("1") == 0) {
-                    estado = estadoClient2;
+                if (vet[numCliente].compareTo("1") == 0 && vet[btCliente].compareTo("A") != 0) {
+                    estado2 = estadoClient2;
                     estadoClient2++;
                     if (estadoClient2 == 5)
                         estadoClient2 = 1;
                 }
-                if (vet[btCliente].compareTo("A") == 0 || verificaGrav(novaPosX, novaPosY) == 1)
+                if (vet[btCliente].compareTo("A") == 0 || verificaGrav(novaPosX, novaPosY, direcao) == 1)
                     novaPosY += anda;
                 System.out.println("Cliente " + vet[numCliente] + " posX " + novaPosX + " posY " + vet[posClienteY]
-                        + " bt " + vet[btCliente] + " grav " + verificaGrav(novaPosX, novaPosY) + " dir " + direcao
-                        + " est1 " + estadoClient1 + " est2 " + estadoClient2);
+                        + " bt " + vet[btCliente] + " grav " + verificaGrav(novaPosX, novaPosY, direcao) + " dir "
+                        + direcao + " est1 " + estadoClient1 + " est2 " + estadoClient2);
                 for (int i = 0; i < cont; i++) {
-                    enviaDados(i, novaPosX, novaPosY);
+                    if(cliente == 0)
+                        enviaDados(i, novaPosX, novaPosY, estado1);
+                    else if(cliente == 1)
+                        enviaDados(i, novaPosX, novaPosY, estado2);
+                    else
+                        enviaDados(i, novaPosX, novaPosY, 0);
+
                 }
             } while (!inputLine.equals(""));
 
@@ -193,7 +235,7 @@ class MatrizMapa {
             { 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0 },
             { 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0 },
             { 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0 },
-            { 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0 },
+            { 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0 },
             { 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0 },
             { 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0 },
             { 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0 },
