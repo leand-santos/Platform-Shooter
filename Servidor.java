@@ -47,7 +47,7 @@ class Servindo extends Thread {
     static PrintStream os[] = new PrintStream[3];
     static int cont = 0;
     String vet[] = new String[20];
-    int direcao, estadoClient1 = 1, estadoClient2 = 1, estado1, estado2;
+    int direcao, estadoClient1 = 1, estadoClient2 = 1, estado1, estado2, posX;
 
     Servindo(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -132,7 +132,7 @@ class Servindo extends Thread {
 
     public void enviaDados(int i, int novaPosX, int novaPosY, int est) {
         os[i].println(vet[numCliente] + " " + novaPosX + " " + novaPosY + " " + vet[btCliente] + " "
-                + verificaGrav(novaPosX, novaPosY, direcao) + " " + direcao + " " + est);
+                + verificaGrav(posX, novaPosY, direcao) + " " + direcao + " " + est);
         os[i].flush();
     }
 
@@ -155,6 +155,7 @@ class Servindo extends Thread {
                         novaPosX += anda - 32;
                     else
                         novaPosX += anda;
+                    posX = novaPosX;
 
                     if (verificaWallDir(novaPosX, novaPosY) == 0 && vet[dirCliente].compareTo("-1") == 0)
                         novaPosX -= anda + 32;
@@ -168,6 +169,7 @@ class Servindo extends Thread {
                         novaPosX -= anda - 32;
                     else
                         novaPosX -= anda;
+                    posX = novaPosX;
 
                     if (verificaWallEsq(novaPosX, novaPosY) == 0 && vet[dirCliente].compareTo("1") == 0)
                         novaPosX += anda + 32;
@@ -188,15 +190,15 @@ class Servindo extends Thread {
                     if (estadoClient2 == 5)
                         estadoClient2 = 1;
                 }
-                if (vet[btCliente].compareTo("A") == 0 || verificaGrav(novaPosX, novaPosY, direcao) == 1)
+                if (vet[btCliente].compareTo("A") == 0 || verificaGrav(posX, novaPosY, direcao) == 1)
                     novaPosY += anda;
                 System.out.println("Cliente " + vet[numCliente] + " posX " + novaPosX + " posY " + vet[posClienteY]
                         + " bt " + vet[btCliente] + " grav " + verificaGrav(novaPosX, novaPosY, direcao) + " dir "
                         + direcao + " est1 " + estadoClient1 + " est2 " + estadoClient2);
                 for (int i = 0; i < cont; i++) {
-                    if(cliente == 0)
+                    if (cliente == 0)
                         enviaDados(i, novaPosX, novaPosY, estado1);
-                    else if(cliente == 1)
+                    else if (cliente == 1)
                         enviaDados(i, novaPosX, novaPosY, estado2);
                     else
                         enviaDados(i, novaPosX, novaPosY, 0);

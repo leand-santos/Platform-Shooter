@@ -113,6 +113,18 @@ public class ClienteFrame extends JFrame implements Runnable {
                                 inputValue += posX2 + " " + posY2 + " A " + "0 " + dirCliente2 + " " + "0";
                             os.println(inputValue);
                         }
+                    } while (true);
+                } catch (InterruptedException e) {
+                }
+            }
+        }).start();
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    if (varControle == -1)
+                        Thread.sleep(500);
+                    do {
+                        Thread.sleep(30);
                         if (gravidade2 == 1) {
                             inputValue = new String(varControle + " ");
                             if (varControle == cliente1)
@@ -123,11 +135,8 @@ public class ClienteFrame extends JFrame implements Runnable {
                         }
                     } while (true);
                 } catch (InterruptedException e) {
-
                 }
-
             }
-
         }).start();
     }
 
