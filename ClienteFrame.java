@@ -18,7 +18,7 @@ public class ClienteFrame extends JFrame implements Runnable {
     int posY2 = 63;
     int varControle = -1; // Variável para saber qual cliente é
     int dirCliente1 = 1, dirCliente2 = 1, estadoClient1 = 0, estadoClient2 = 0;
-    int gravidade1 = 0, gravidade2 = 0;
+    int gravidade1 = 0, gravidade2 = 0, qntPulo = 0;
     final int size = 2, cliente1 = 0, cliente2 = 1, numCliente = 0, posClienteX = 1, posClienteY = 2, btCliente = 3,
             gravCliente = 4, dirCliente = 5, estadoCliente = 6;
     String estadoCliente1 = new String("Player1Parado"), estadoCliente2 = new String("Player2Parado"), inputValue;
@@ -140,7 +140,6 @@ public class ClienteFrame extends JFrame implements Runnable {
                                     concatenaValores("SPACE-AND-LEFT", 1);
                                 else
                                     concatenaValores("SPACE", 1);
-
                             } else if (varControle == cliente2) {
                                 if (isKeyRightPressed == true)
                                     concatenaValores("SPACE-AND-RIGHT", 2);

@@ -47,9 +47,8 @@ class Servindo extends Thread {
     static PrintStream os[] = new PrintStream[3];
     static int cont = 0;
     String vet[] = new String[20];
-    int direcao, estadoClient1 = 1, estadoClient2 = 1, estado1, estado2, posX, posY;
-    boolean spaceEstaApertada = false;
-    int contPulo;
+    int direcao, estadoClient1 = 1, estadoClient2 = 1, estado1, estado2, contPulo = 0;
+    boolean isKeySpacePressed = false;
 
     Servindo(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -88,7 +87,7 @@ class Servindo extends Thread {
         return 1;
     }
 
-    public int verificaTeto(int posX, int posY, int direcao){
+    public int verificaTeto(int posX, int posY, int direcao) {
         MatrizMapa posMap = new MatrizMapa();
         int matX1, matX2, matY1, matY2;
         matX1 = posX / 32;
@@ -161,7 +160,7 @@ class Servindo extends Thread {
 
     public void enviaDados(int i, int novaPosX, int novaPosY, int est) {
         os[i].println(vet[numCliente] + " " + novaPosX + " " + novaPosY + " " + vet[btCliente] + " "
-                + verificaGrav(posX, novaPosY, direcao) + " " + direcao + " " + est);
+                + verificaGrav(novaPosX, novaPosY, direcao) + " " + direcao + " " + est);
         os[i].flush();
     }
 
@@ -178,33 +177,26 @@ class Servindo extends Thread {
                 int novaPosX = Integer.parseInt(vet[posClienteX]);
                 int novaPosY = Integer.parseInt(vet[posClienteY]);
                 int cliente = Integer.parseInt(vet[numCliente]);
-                posY = novaPosY;
 
-                if (vet[btCliente].compareTo("RIGHT") == 0) {
+                if (vet[btCliente].compareTo("RIGHT") == 0 || vet[btCliente].compareTo("SPACE-AND-RIGHT") == 0) {
                     if (vet[dirCliente].compareTo("-1") == 0)
                         novaPosX -= 32;
                     if (verificaWallDir(novaPosX, novaPosY) == 1)
                         novaPosX += anda;
-                    posX = novaPosX;
                     direcao = 1;
                 }
-                if (vet[btCliente].compareTo("LEFT") == 0) {
+                if (vet[btCliente].compareTo("LEFT") == 0 || vet[btCliente].compareTo("SPACE-AND-LEFT") == 0) {
                     if (vet[dirCliente].compareTo("1") == 0)
                         novaPosX += 32;
                     if (verificaWallEsq(novaPosX - 32, novaPosY) == 1)
                         novaPosX -= anda;
-                    posX = novaPosX;
                     direcao = -1;
                 }
 
-                if (vet[btCliente].compareTo("SPACE") == 0) {
-                    spaceEstaApertada = true;
+                if ((vet[btCliente].compareTo("SPACE") == 0 || vet[btCliente].compareTo("SPACE-AND-RIGHT") == 0
+                        || vet[btCliente].compareTo("SPACE-AND-LEFT") == 0) && (verificaGrav(novaPosX + anda, novaPosY + anda, direcao) == 0)) {
+                    isKeySpacePressed = true;
                     contPulo = 0;
-                }
-
-                if (vet[btCliente].compareTo("SPACE-AND-RIGHT") == 0
-                        || vet[btCliente].compareTo("SPACE-AND-LEFT") == 0) {
-                    // System.out.println("AS DUAS TECLAS ESTAO SENDO APERTADAS");
                 }
 
                 if (vet[numCliente].compareTo("0") == 0 && vet[btCliente].compareTo("A") != 0) {
@@ -219,14 +211,16 @@ class Servindo extends Thread {
                     if (estadoClient2 == 5)
                         estadoClient2 = 1;
                 }
-                if (verificaGrav(posX, novaPosY, direcao) == 1 && !spaceEstaApertada)
+                if (verificaGrav(novaPosX, novaPosY, direcao) == 1 && !isKeySpacePressed)
                     novaPosY += anda;
-                else if (verificaGrav(posX, novaPosY, direcao) == 1 && spaceEstaApertada) {
+                else if (verificaGrav(novaPosX, novaPosY, direcao) == 1 && isKeySpacePressed) {
                     contPulo++;
-                    if (verificaTeto(posX, novaPosY, direcao) == 1)
+                    if (verificaTeto(novaPosX, novaPosY, direcao) == 1)
                         novaPosY -= anda;
-                    if (contPulo == 30)
-                        spaceEstaApertada = false;
+                    if (contPulo == 64) {
+                        isKeySpacePressed = false;
+                        contPulo = 0;
+                    }
                 }
                 /*
                  * System.out.println("Cliente " + vet[numCliente] + " posX " + novaPosX +
