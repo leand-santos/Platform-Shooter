@@ -1,5 +1,5 @@
 # Trabalho-Jogo
-*<p align="center">Desenvolvimento do projeto sem nenhum fim lucrativo, <strong>para uso educacional</strong></p>*
+*<p align="center">Desenvolvimento do projeto para a matéria de Técnicas de Programação, <strong>uso educacional</strong></p>*
 ## Resumo 
 A criação de um **jogo de plataforma em 2D** em uma arquitetura cliente-servidor para a matéria de Técnicas de Programação, cujo objetivo é a eliminação do adversário com o uso de uma arma de fogo em um mapa de tamanho médio, onde há a possibilidade do jogador *pular, atirar, agachar e coletar Power-Ups (poderes especiais)*.
 ## Introdução
