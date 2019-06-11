@@ -9,20 +9,35 @@ import java.util.Timer;
 import javax.imageio.*;
 
 public class ClienteFrame extends JFrame implements Runnable {
+    Personagem elementos;
     Image personagem[] = new Image[24];
+    Image weapon[] = new Image[3];
+    Image bullet[] = new Image[2];
     Image background[] = new Image[1];
     static PrintStream os = null;
     int posX1 = 64;
     int posY1 = 63;
     int posX2 = 960;
     int posY2 = 63;
+    int posTiroX1 = 1030;
+    int posTiroY1 = 1000;
+    int posTiroX2 = 1030;
+    int posTiroY2 = 1000;
+    int posArmaX1 = 69; // 5
+    int posArmaY1 = 75; // 10
+    int posArmaX2 = 962; // 2
+    int posArmaY2 = 75; // 10
     int varControle = -1; // Variável para saber qual cliente é
     int dirCliente1 = 1, dirCliente2 = 1, estadoClient1 = 0, estadoClient2 = 0;
     int gravidade1 = 0, gravidade2 = 0, qntPulo = 0;
     final int size = 2, cliente1 = 0, cliente2 = 1, numCliente = 0, posClienteX = 1, posClienteY = 2, btCliente = 3,
             gravCliente = 4, dirCliente = 5, estadoCliente = 6;
     String estadoCliente1 = new String("Player1Parado"), estadoCliente2 = new String("Player2Parado"), inputValue;
-    boolean isKeyRightPressed = false, isKeyLeftPressed = false, isKeySpacePressed = false;
+    boolean isKeyRightPressed = false, isKeyLeftPressed = false, isKeySpacePressed = false, isBulletOn = false;
+
+    public static void main(String[] args) {
+        new Thread(new ClienteFrame()).start();
+    }
 
     class Personagem extends JPanel {
         // String para nomes das imagens dos personagens e cenário
@@ -38,6 +53,10 @@ public class ClienteFrame extends JFrame implements Runnable {
             // Tamanho das sprites: 32 x 32 personagem
             setPreferredSize(new Dimension(1024, 768)); // 32*32 e 32*24 Tamanho do mapa
             try {
+                bullet[0] = ImageIO.read(new File("img/bullets/Bullet1.png"));
+                bullet[1] = ImageIO.read(new File("img/bullets/Bullet2.png"));
+                weapon[0] = ImageIO.read(new File("img/weapons/Weapon1.png"));
+                weapon[1] = ImageIO.read(new File("img/weapons/Weapon2.png"));
                 background[0] = ImageIO.read(new File("img/bg/Background.png"));
                 // Lê todas as imagens da pasta img e coloca os valores da posição da imagem no
                 // vetor
@@ -55,12 +74,21 @@ public class ClienteFrame extends JFrame implements Runnable {
         public void paintComponent(Graphics g) {
             super.paintComponent(g);
             g.drawImage(background[0], 0, 0, this);
+            g.drawImage(bullet[0], posTiroX1, posTiroY1, bullet[0].getWidth(this) * size,
+                    bullet[0].getHeight(this) * size, this);
+            g.drawImage(bullet[1], posTiroX2, posTiroY2, bullet[1].getWidth(this) * size,
+                    bullet[1].getHeight(this) * size, this);
             g.drawImage(personagem[valorNumeroPersonagem.get(estadoCliente1)], posX1, posY1,
                     personagem[valorNumeroPersonagem.get(estadoCliente1)].getWidth(this) * size * dirCliente1,
                     personagem[valorNumeroPersonagem.get(estadoCliente1)].getHeight(this) * size, this);
             g.drawImage(personagem[valorNumeroPersonagem.get(estadoCliente2)], posX2, posY2,
                     personagem[valorNumeroPersonagem.get(estadoCliente2)].getWidth(this) * size * dirCliente2,
                     personagem[valorNumeroPersonagem.get(estadoCliente2)].getHeight(this) * size, this);
+            g.drawImage(weapon[0], posArmaX1, posArmaY1, weapon[0].getWidth(this) * size * dirCliente1,
+                    weapon[0].getHeight(this) * size, this);
+            g.drawImage(weapon[1], posArmaX2, posArmaY2, weapon[1].getWidth(this) * size * dirCliente2,
+                    weapon[1].getHeight(this) * size, this);
+
             Toolkit.getDefaultToolkit().sync();
         }
     }
@@ -76,9 +104,10 @@ public class ClienteFrame extends JFrame implements Runnable {
 
     ClienteFrame() {
         super("TowerFall");
+        elementos = new Personagem();
         setResizable(false);
         // gravidade(os);
-        add(new Personagem());
+        add(elementos);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         pack();
         setVisible(true);
@@ -94,8 +123,15 @@ public class ClienteFrame extends JFrame implements Runnable {
                 case KeyEvent.VK_SPACE:
                     isKeySpacePressed = true;
                     break;
+                case KeyEvent.VK_W:
+                    isBulletOn = true;
+                    posTiroX1 = posX1 + 33;
+                    posTiroY1 = posY1 + 16;
+                    repaint();
+                    break;
                 }
             }
+
             public void keyReleased(KeyEvent e2) {
                 switch (e2.getKeyCode()) {
                 case KeyEvent.VK_D:
@@ -106,6 +142,12 @@ public class ClienteFrame extends JFrame implements Runnable {
                     break;
                 case KeyEvent.VK_SPACE:
                     isKeySpacePressed = false;
+                    break;
+                case KeyEvent.VK_W:
+                    isBulletOn = false;
+                    posTiroX1 = 1030;
+                    posTiroY1 = 1000;
+                    repaint();
                     break;
                 }
             }
@@ -164,7 +206,7 @@ public class ClienteFrame extends JFrame implements Runnable {
                     do {
                         Thread.sleep(30);
                         if (gravidade1 == 1 && varControle == 0) {
-                            concatenaValores("GRAVIDADE", 1);    
+                            concatenaValores("GRAVIDADE", 1);
                             os.println(inputValue);
                         }
                     } while (true);
@@ -181,7 +223,7 @@ public class ClienteFrame extends JFrame implements Runnable {
                     do {
                         Thread.sleep(30);
                         if (gravidade2 == 1 && varControle == 1) {
-                            concatenaValores("GRAVIDADE", 2); 
+                            concatenaValores("GRAVIDADE", 2);
                             os.println(inputValue);
                         }
                     } while (true);
@@ -189,10 +231,6 @@ public class ClienteFrame extends JFrame implements Runnable {
                 }
             }
         }).start();
-    }
-
-    public static void main(String[] args) {
-        new Thread(new ClienteFrame()).start();
     }
 
     public void verificaEstado(int estado, int client) {
@@ -263,6 +301,12 @@ public class ClienteFrame extends JFrame implements Runnable {
                 int estClienteRecebido = Integer.parseInt(vet[estadoCliente]);
                 if (numClienteRecebido == cliente1) {
                     posX1 = posAtualRecebidaX;
+                    if (dirClienteRecebido == 1)
+
+                        posArmaX1 = posAtualRecebidaX + 5;
+                    else
+                        posArmaX1 = posAtualRecebidaX - 5;
+                    posArmaY1 = posAtualRecebidaY + 10;
                     estadoCliente1 = vet[estadoCliente];
                     dirCliente1 = dirClienteRecebido;
                     verificaEstado(estClienteRecebido, 0);
@@ -273,6 +317,11 @@ public class ClienteFrame extends JFrame implements Runnable {
                 }
                 if (numClienteRecebido == cliente2) {
                     posX2 = posAtualRecebidaX;
+                    if (dirClienteRecebido == 1)
+                        posArmaX2 = posAtualRecebidaX + 2;
+                    else
+                        posArmaX2 = posAtualRecebidaX - 2;
+                    posArmaY2 = posAtualRecebidaY + 10;
                     estadoCliente2 = vet[estadoCliente];
                     dirCliente2 = dirClienteRecebido;
                     verificaEstado(estClienteRecebido, 1);
