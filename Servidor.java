@@ -42,12 +42,13 @@ class Servindo extends Thread {
             "Player1Morte6", "Player2Parado", "Player2Mov1", "Player2Mov2", "Player2Mov3", "Player2Mov4", "Player2Mov5",
             "Player2Morte1", "Player2Morte2", "Player2Morte3", "Player2Morte4", "Player2Morte5", "Player2Morte6" };
     final int anda = 3, cliente1 = 0, cliente2 = 1, numCliente = 0, posClienteX = 1, posClienteY = 2, btCliente = 3,
-            gravCliente = 4, dirCliente = 5, estadoCliente = 6;
+            gravCliente = 4, dirCliente = 5, estadoCliente = 6, posBulletX = 7, posBulletY = 8, bulletGo = 9;
     Socket clientSocket;
     static PrintStream os[] = new PrintStream[3];
     static int cont = 0;
     String vet[] = new String[20];
-    int direcao, estadoClient1 = 1, estadoClient2 = 1, estado1, estado2, contPulo = 0;
+    int direcao, estadoClient1 = 1, estadoClient2 = 1, estado1, estado2, contPulo = 0, novaPosTiroX, novaPosTiroY,
+            canShoot;
     boolean isKeySpacePressed = false;
 
     Servindo(Socket clientSocket) {
@@ -160,7 +161,8 @@ class Servindo extends Thread {
 
     public void enviaDados(int i, int novaPosX, int novaPosY, int est) {
         os[i].println(vet[numCliente] + " " + novaPosX + " " + novaPosY + " " + vet[btCliente] + " "
-                + verificaGrav(novaPosX, novaPosY, direcao) + " " + direcao + " " + est);
+                + verificaGrav(novaPosX, novaPosY, direcao) + " " + direcao + " " + est + " " + novaPosTiroX + " "
+                + novaPosTiroY + " " + canShoot);
         os[i].flush();
     }
 
@@ -178,48 +180,64 @@ class Servindo extends Thread {
                 int novaPosY = Integer.parseInt(vet[posClienteY]);
                 int cliente = Integer.parseInt(vet[numCliente]);
 
-                if (vet[btCliente].compareTo("RIGHT") == 0 || vet[btCliente].compareTo("SPACE-AND-RIGHT") == 0) {
-                    if (vet[dirCliente].compareTo("-1") == 0)
-                        novaPosX -= 32;
-                    if (verificaWallDir(novaPosX, novaPosY) == 1)
-                        novaPosX += anda;
-                    direcao = 1;
-                }
-                if (vet[btCliente].compareTo("LEFT") == 0 || vet[btCliente].compareTo("SPACE-AND-LEFT") == 0) {
-                    if (vet[dirCliente].compareTo("1") == 0)
-                        novaPosX += 32;
-                    if (verificaWallEsq(novaPosX - 32, novaPosY) == 1)
-                        novaPosX -= anda;
-                    direcao = -1;
-                }
+                if (vet[btCliente].compareTo("BULLET") == 0) {
+                    int novaPosTiroX = Integer.parseInt(vet[posBulletX]);
+                    int novaPosTiroY = Integer.parseInt(vet[posBulletY]);
+                    if (direcao == 1 && verificaWallDir(novaPosTiroX + anda + 17, novaPosTiroY) == 1)
+                        novaPosTiroX += anda;
+                    else if (direcao == -1 && verificaWallEsq(novaPosTiroX + anda - 17, novaPosTiroY) == 1)
+                        novaPosTiroX -= anda;
+                    else {
+                        novaPosTiroX = 1030;
+                        novaPosTiroY = 1000;
+                        canShoot = 1;
+                    }
+                } else {
 
-                if ((vet[btCliente].compareTo("SPACE") == 0 || vet[btCliente].compareTo("SPACE-AND-RIGHT") == 0
-                        || vet[btCliente].compareTo("SPACE-AND-LEFT") == 0) && (verificaGrav(novaPosX + anda, novaPosY + anda, direcao) == 0)) {
-                    isKeySpacePressed = true;
-                    contPulo = 0;
-                }
+                    if (vet[btCliente].compareTo("RIGHT") == 0 || vet[btCliente].compareTo("SPACE-AND-RIGHT") == 0) {
+                        if (vet[dirCliente].compareTo("-1") == 0)
+                            novaPosX -= 32;
+                        if (verificaWallDir(novaPosX, novaPosY) == 1)
+                            novaPosX += anda;
+                        direcao = 1;
+                    }
+                    if (vet[btCliente].compareTo("LEFT") == 0 || vet[btCliente].compareTo("SPACE-AND-LEFT") == 0) {
+                        if (vet[dirCliente].compareTo("1") == 0)
+                            novaPosX += 32;
+                        if (verificaWallEsq(novaPosX - 32, novaPosY) == 1)
+                            novaPosX -= anda;
+                        direcao = -1;
+                    }
 
-                if (vet[numCliente].compareTo("0") == 0 && vet[btCliente].compareTo("A") != 0) {
-                    estado1 = estadoClient1;
-                    estadoClient1++;
-                    if (estadoClient1 == 5)
-                        estadoClient1 = 1;
-                }
-                if (vet[numCliente].compareTo("1") == 0 && vet[btCliente].compareTo("A") != 0) {
-                    estado2 = estadoClient2;
-                    estadoClient2++;
-                    if (estadoClient2 == 5)
-                        estadoClient2 = 1;
-                }
-                if (verificaGrav(novaPosX, novaPosY, direcao) == 1 && !isKeySpacePressed)
-                    novaPosY += anda;
-                else if (verificaGrav(novaPosX, novaPosY, direcao) == 1 && isKeySpacePressed) {
-                    contPulo++;
-                    if (verificaTeto(novaPosX, novaPosY, direcao) == 1)
-                        novaPosY -= anda;
-                    if (contPulo == 64) {
-                        isKeySpacePressed = false;
+                    if ((vet[btCliente].compareTo("SPACE") == 0 || vet[btCliente].compareTo("SPACE-AND-RIGHT") == 0
+                            || vet[btCliente].compareTo("SPACE-AND-LEFT") == 0)
+                            && (verificaGrav(novaPosX + anda, novaPosY + anda, direcao) == 0)) {
+                        isKeySpacePressed = true;
                         contPulo = 0;
+                    }
+
+                    if (vet[numCliente].compareTo("0") == 0 && vet[btCliente].compareTo("A") != 0) {
+                        estado1 = estadoClient1;
+                        estadoClient1++;
+                        if (estadoClient1 == 5)
+                            estadoClient1 = 1;
+                    }
+                    if (vet[numCliente].compareTo("1") == 0 && vet[btCliente].compareTo("A") != 0) {
+                        estado2 = estadoClient2;
+                        estadoClient2++;
+                        if (estadoClient2 == 5)
+                            estadoClient2 = 1;
+                    }
+                    if (verificaGrav(novaPosX, novaPosY, direcao) == 1 && !isKeySpacePressed)
+                        novaPosY += anda;
+                    else if (verificaGrav(novaPosX, novaPosY, direcao) == 1 && isKeySpacePressed) {
+                        contPulo++;
+                        if (verificaTeto(novaPosX, novaPosY, direcao) == 1)
+                            novaPosY -= anda;
+                        if (contPulo == 64) {
+                            isKeySpacePressed = false;
+                            contPulo = 0;
+                        }
                     }
                 }
                 /*
