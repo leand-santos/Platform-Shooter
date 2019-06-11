@@ -23,6 +23,7 @@ public class ClienteFrame extends JFrame implements Runnable {
     final int size = 2, cliente1 = 0, cliente2 = 1, numCliente = 0, posClienteX = 1, posClienteY = 2, btCliente = 3,
             gravCliente = 4, dirCliente = 5, estadoCliente = 6;
     String estadoCliente1 = new String("Player1Parado"), estadoCliente2 = new String("Player2Parado"), inputValue;
+    boolean isKeyRightPressed = false, isKeyLeftPressed = false;
 
     class Personagem extends JPanel {
         // String para nomes das imagens dos personagens e cenário
@@ -79,34 +80,55 @@ public class ClienteFrame extends JFrame implements Runnable {
                 // (número do cliente, botão apertado)
                 switch (e.getKeyCode()) {
                 case KeyEvent.VK_D:
+                    isKeyRightPressed = true;
                     if (varControle == cliente1)
                         inputValue += posX1 + " " + posY1 + " RIGHT " + "0 " + dirCliente1 + " " + estadoClient1;
                     else if (varControle == cliente2)
                         inputValue += posX2 + " " + posY2 + " RIGHT " + "0 " + dirCliente2 + " " + estadoClient2;
-                    os.println(inputValue);
                     // System.out.println(inputValue);
                     break;
                 case KeyEvent.VK_A:
+                    isKeyLeftPressed = true;
                     if (varControle == cliente1)
                         inputValue += posX1 + " " + posY1 + " LEFT " + "0 " + dirCliente1 + " " + estadoClient1;
                     else if (varControle == cliente2)
                         inputValue += posX2 + " " + posY2 + " LEFT " + "0 " + dirCliente2 + " " + estadoClient2;
-                    os.println(inputValue);
                     // System.out.println(inputValue);
                     break;
                 case KeyEvent.VK_SPACE:
-                    if (varControle == cliente1)
-                        inputValue += posX1 + " " + posY1 + " SPACE " + "0 " + dirCliente1 + " " + estadoClient1;
-                    else if (varControle == cliente2)
-                        inputValue += posX2 + " " + posY2 + " SPACE " + "0 " + dirCliente2 + " " + estadoClient2;
-                    os.println(inputValue);
+                    if (varControle == cliente1) {
+                        if (isKeyRightPressed == true) {
+                            inputValue += posX1 + " " + posY1 + " SPACE-AND-RIGHT " + "0 " + dirCliente1 + " "
+                                    + estadoClient1;
+                        } else if (isKeyLeftPressed == true) {
+                            inputValue += posX1 + " " + posY1 + " SPACE-AND-LEFT " + "0 " + dirCliente1 + " "
+                                    + estadoClient1;
+                        } else {
+                            inputValue += posX1 + " " + posY1 + " SPACE " + "0 " + dirCliente1 + " " + estadoClient1;
+                        }
+                    } else if (varControle == cliente2) {
+                        if (isKeyRightPressed == true) {
+                            inputValue += posX2 + " " + posY2 + " SPACE-AND-RIGHT " + "0 " + dirCliente2 + " "
+                                    + estadoClient2;
+                        } else if (isKeyLeftPressed == true) {
+                            inputValue += posX2 + " " + posY2 + " SPACE-AND-LEFT " + "0 " + dirCliente2 + " "
+                                    + estadoClient2;
+                        } else {
+                            inputValue += posX2 + " " + posY2 + " SPACE " + "0 " + dirCliente2 + " " + estadoClient2;
+                        }
+                    }
                     break;
-                case (KeyEvent.VK_SPACE) && (KeyEvent.VK_D):
-                    if (varControle == cliente1)
-                        inputValue += posX1 + " " + posY1 + " SPACE " + "0 " + dirCliente1 + " " + estadoClient1;
-                    else if (varControle == cliente2)
-                        inputValue += posX2 + " " + posY2 + " SPACE " + "0 " + dirCliente2 + " " + estadoClient2;
-                    os.println(inputValue);
+                }
+                os.println(inputValue);
+            }
+
+            public void keyReleased(KeyEvent e2) {
+                switch (e2.getKeyCode()) {
+                case KeyEvent.VK_D:
+                    isKeyRightPressed = false;
+                    break;
+                case KeyEvent.VK_A:
+                    isKeyLeftPressed = false;
                     break;
                 }
             }

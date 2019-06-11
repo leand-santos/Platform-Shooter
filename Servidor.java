@@ -174,6 +174,10 @@ class Servindo extends Thread {
                     contPulo = 0;
                 }
 
+                if (vet[btCliente].compareTo("SPACE-AND-RIGHT") == 0 || vet[btCliente].compareTo("SPACE-AND-LEFT") == 0) {
+                    System.out.println("AS DUAS TECLAS ESTAO SENDO APERTADAS");
+                }
+
                 if (vet[numCliente].compareTo("0") == 0 && vet[btCliente].compareTo("A") != 0) {
                     estado1 = estadoClient1;
                     estadoClient1++;
