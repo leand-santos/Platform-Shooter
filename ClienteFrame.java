@@ -6,7 +6,6 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.util.Timer;
-
 import javax.imageio.*;
 
 public class ClienteFrame extends JFrame implements Runnable {
@@ -23,7 +22,7 @@ public class ClienteFrame extends JFrame implements Runnable {
     final int size = 2, cliente1 = 0, cliente2 = 1, numCliente = 0, posClienteX = 1, posClienteY = 2, btCliente = 3,
             gravCliente = 4, dirCliente = 5, estadoCliente = 6;
     String estadoCliente1 = new String("Player1Parado"), estadoCliente2 = new String("Player2Parado"), inputValue;
-    boolean isKeyRightPressed = false, isKeyLeftPressed = false;
+    boolean isKeyRightPressed = false, isKeyLeftPressed = false, isKeySpacePressed = false;
 
     class Personagem extends JPanel {
         // String para nomes das imagens dos personagens e cenário
@@ -66,6 +65,15 @@ public class ClienteFrame extends JFrame implements Runnable {
         }
     }
 
+    public void concatenaValores(String btRecebido, int cliente) {
+        if (cliente == 1)
+            inputValue = varControle + " " + posX1 + " " + posY1 + " " + btRecebido + " 0 " + dirCliente1 + " "
+                    + estadoClient1;
+        if (cliente == 2)
+            inputValue = varControle + " " + posX2 + " " + posY2 + " " + btRecebido + " 0 " + dirCliente2 + " "
+                    + estadoClient2;
+    }
+
     ClienteFrame() {
         super("TowerFall");
         setResizable(false);
@@ -76,52 +84,18 @@ public class ClienteFrame extends JFrame implements Runnable {
         setVisible(true);
         addKeyListener(new KeyAdapter() {
             public void keyPressed(KeyEvent e) {
-                inputValue = new String(varControle + " ");
-                // (número do cliente, botão apertado)
                 switch (e.getKeyCode()) {
                 case KeyEvent.VK_D:
                     isKeyRightPressed = true;
-                    if (varControle == cliente1)
-                        inputValue += posX1 + " " + posY1 + " RIGHT " + "0 " + dirCliente1 + " " + estadoClient1;
-                    else if (varControle == cliente2)
-                        inputValue += posX2 + " " + posY2 + " RIGHT " + "0 " + dirCliente2 + " " + estadoClient2;
-                    // System.out.println(inputValue);
                     break;
                 case KeyEvent.VK_A:
                     isKeyLeftPressed = true;
-                    if (varControle == cliente1)
-                        inputValue += posX1 + " " + posY1 + " LEFT " + "0 " + dirCliente1 + " " + estadoClient1;
-                    else if (varControle == cliente2)
-                        inputValue += posX2 + " " + posY2 + " LEFT " + "0 " + dirCliente2 + " " + estadoClient2;
-                    // System.out.println(inputValue);
                     break;
                 case KeyEvent.VK_SPACE:
-                    if (varControle == cliente1) {
-                        if (isKeyRightPressed == true) {
-                            inputValue += posX1 + " " + posY1 + " SPACE-AND-RIGHT " + "0 " + dirCliente1 + " "
-                                    + estadoClient1;
-                        } else if (isKeyLeftPressed == true) {
-                            inputValue += posX1 + " " + posY1 + " SPACE-AND-LEFT " + "0 " + dirCliente1 + " "
-                                    + estadoClient1;
-                        } else {
-                            inputValue += posX1 + " " + posY1 + " SPACE " + "0 " + dirCliente1 + " " + estadoClient1;
-                        }
-                    } else if (varControle == cliente2) {
-                        if (isKeyRightPressed == true) {
-                            inputValue += posX2 + " " + posY2 + " SPACE-AND-RIGHT " + "0 " + dirCliente2 + " "
-                                    + estadoClient2;
-                        } else if (isKeyLeftPressed == true) {
-                            inputValue += posX2 + " " + posY2 + " SPACE-AND-LEFT " + "0 " + dirCliente2 + " "
-                                    + estadoClient2;
-                        } else {
-                            inputValue += posX2 + " " + posY2 + " SPACE " + "0 " + dirCliente2 + " " + estadoClient2;
-                        }
-                    }
+                    isKeySpacePressed = true;
                     break;
                 }
-                os.println(inputValue);
             }
-
             public void keyReleased(KeyEvent e2) {
                 switch (e2.getKeyCode()) {
                 case KeyEvent.VK_D:
@@ -129,6 +103,9 @@ public class ClienteFrame extends JFrame implements Runnable {
                     break;
                 case KeyEvent.VK_A:
                     isKeyLeftPressed = false;
+                    break;
+                case KeyEvent.VK_SPACE:
+                    isKeySpacePressed = false;
                     break;
                 }
             }
@@ -141,12 +118,37 @@ public class ClienteFrame extends JFrame implements Runnable {
                         Thread.sleep(500);
                     do {
                         Thread.sleep(30);
-                        if (gravidade1 == 1) {
-                            inputValue = new String(varControle + " ");
+                        if (isKeyRightPressed) {
                             if (varControle == cliente1)
-                                inputValue += posX1 + " " + posY1 + " A " + "0 " + dirCliente1 + " " + "0";
-                            if (varControle == cliente2)
-                                inputValue += posX2 + " " + posY2 + " A " + "0 " + dirCliente2 + " " + "0";
+                                concatenaValores("RIGHT", 1);
+                            else if (varControle == cliente2)
+                                concatenaValores("RIGHT", 2);
+                            os.println(inputValue);
+                        }
+                        if (isKeyLeftPressed) {
+                            if (varControle == cliente1)
+                                concatenaValores("LEFT", 1);
+                            else if (varControle == cliente2)
+                                concatenaValores("LEFT", 2);
+                            os.println(inputValue);
+                        }
+                        if (isKeySpacePressed) {
+                            if (varControle == cliente1) {
+                                if (isKeyRightPressed == true)
+                                    concatenaValores("SPACE-AND-RIGHT", 1);
+                                else if (isKeyLeftPressed == true)
+                                    concatenaValores("SPACE-AND-LEFT", 1);
+                                else
+                                    concatenaValores("SPACE", 1);
+
+                            } else if (varControle == cliente2) {
+                                if (isKeyRightPressed == true)
+                                    concatenaValores("SPACE-AND-RIGHT", 2);
+                                else if (isKeyLeftPressed == true)
+                                    concatenaValores("SPACE-AND-LEFT", 2);
+                                else
+                                    concatenaValores("SPACE", 2);
+                            }
                             os.println(inputValue);
                         }
                     } while (true);
@@ -154,6 +156,7 @@ public class ClienteFrame extends JFrame implements Runnable {
                 }
             }
         }).start();
+
         new Thread(new Runnable() {
             public void run() {
                 try {
@@ -161,12 +164,25 @@ public class ClienteFrame extends JFrame implements Runnable {
                         Thread.sleep(500);
                     do {
                         Thread.sleep(30);
-                        if (gravidade2 == 1) {
-                            inputValue = new String(varControle + " ");
-                            if (varControle == cliente1)
-                                inputValue += posX1 + " " + posY1 + " A " + "0 " + dirCliente1 + " " + "0";
-                            if (varControle == cliente2)
-                                inputValue += posX2 + " " + posY2 + " A " + "0 " + dirCliente2 + " " + "0";
+                        if (gravidade1 == 1 && varControle == 0) {
+                            concatenaValores("GRAVIDADE", 1);    
+                            os.println(inputValue);
+                        }
+                    } while (true);
+                } catch (InterruptedException e) {
+                }
+            }
+        }).start();
+
+        new Thread(new Runnable() {
+            public void run() {
+                try {
+                    if (varControle == -1)
+                        Thread.sleep(500);
+                    do {
+                        Thread.sleep(30);
+                        if (gravidade2 == 1 && varControle == 1) {
+                            concatenaValores("GRAVIDADE", 2); 
                             os.println(inputValue);
                         }
                     } while (true);
