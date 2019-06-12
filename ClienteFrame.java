@@ -123,11 +123,8 @@ public class ClienteFrame extends JFrame implements Runnable {
                     break;
                 case KeyEvent.VK_W:
                     isBulletOn = true;
-                    if (varControle == 0){
-                        canShoot1 = 0;
-                        canBulletGo1 = 1;
+                    if (varControle == 0) 
                         isBulletOnCliente1 = true;
-                    }
                     else if (varControle == 1)
                         isBulletOnCliente2 = true;
                     break;
@@ -163,17 +160,15 @@ public class ClienteFrame extends JFrame implements Runnable {
                         Thread.sleep(500);
                     do {
                         Thread.sleep(100);
-                        if (isBulletOnCliente1) {
+                        while (isBulletOnCliente1) {
+                            canShoot1 = 1;
+                            concatenaValores("BULLET", 1);
+                            os.println(inputValue);
                             while (canBulletGo1 == 1) {
-                                if (canShoot1 == 0) {
-                                    canShoot1 = 1;
-                                    concatenaValores("BULLET", 1);
-                                    os.println(inputValue);
-                                }
                                 canShoot1 = -1;
                                 concatenaValores("BULLET", 1);
                                 os.println(inputValue);
-                                Thread.sleep(30);
+                                Thread.sleep(15);
                             }
                         }
                     } while (true);
@@ -189,7 +184,7 @@ public class ClienteFrame extends JFrame implements Runnable {
                         Thread.sleep(500);
                     do {
                         Thread.sleep(100);
-                        if (isBulletOnCliente2) {
+                        while (isBulletOnCliente2) {
                             canShoot2 = 1;
                             concatenaValores("BULLET", 2);
                             os.println(inputValue);
@@ -197,7 +192,7 @@ public class ClienteFrame extends JFrame implements Runnable {
                                 canShoot2 = -1;
                                 concatenaValores("BULLET", 2);
                                 os.println(inputValue);
-                                Thread.sleep(30);
+                                Thread.sleep(15);
                             }
                         }
                     } while (true);

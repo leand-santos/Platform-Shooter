@@ -47,8 +47,8 @@ class Servindo extends Thread {
     static PrintStream os[] = new PrintStream[3];
     static int cont = 0;
     String vet[] = new String[20];
-    int direcao, estadoClient1 = 1, estadoClient2 = 1, estado1, estado2, contPulo = 0, posTiroX =1030, posTiroY = 1000, canShoot,
-            isGravityOn = 0;
+    int direcao, estadoClient1 = 1, estadoClient2 = 1, estado1, estado2, contPulo = 0, posTiroX = 1030, posTiroY = 1000,
+            direcaoTiro, canShoot, isGravityOn = 0;
     boolean isKeySpacePressed = false;
 
     Servindo(Socket clientSocket) {
@@ -115,13 +115,13 @@ class Servindo extends Thread {
         return 1;
     }
 
-    public int verificaWallEsq(int posX, int posY) {
+    public int verificaWallEsq(int posX, int posY, int width, int height) {
         MatrizMapa posMap = new MatrizMapa();
         int matX1, matX2, matY1, matY2;
         if (posX == 1030 || posY == 1000)
             return 0;
         matX1 = posX / 32;
-        matY1 = (posY + 32) / 32;
+        matY1 = (posY + height) / 32;
         matX2 = posX / 32;
         matY2 = posY / 32;
         if (matX1 >= 32 || matY1 >= 22 || matX2 >= 32 || matY2 >= 22) {
@@ -139,15 +139,15 @@ class Servindo extends Thread {
         return 1;
     }
 
-    public int verificaWallDir(int posX, int posY) {
+    public int verificaWallDir(int posX, int posY, int width, int height) {
         MatrizMapa posMap = new MatrizMapa();
         int matX1, matX2, matY1, matY2;
         if (posX == 1030 || posY == 1000)
             return 0;
-        matX1 = (posX + 32) / 32;
+        matX1 = (posX + width) / 32;
         matY1 = posY / 32;
-        matX2 = (posX + 32) / 32;
-        matY2 = (posY + 32) / 32;
+        matX2 = (posX + width) / 32;
+        matY2 = (posY + height) / 32;
         if (matX1 >= 32 || matY1 >= 22 || matX2 >= 32 || matY2 >= 22) {
             if (matX1 >= 32)
                 matX1 = 31;
@@ -185,6 +185,7 @@ class Servindo extends Thread {
                 if (vet[btCliente].compareTo("BULLET") == 0) {
                     int novaPosTiroX = Integer.parseInt(vet[posBulletX]);
                     int novaPosTiroY = Integer.parseInt(vet[posBulletY]);
+                    int dirRecebido = Integer.parseInt(vet[dirCliente]);
                     if (vet[bulletGo].compareTo("1") == 0) { // Define posição inicial do tiro
                         if (vet[dirCliente].compareTo("1") == 0) {
                             posTiroX = novaPosX + 46;
@@ -193,18 +194,19 @@ class Servindo extends Thread {
                             posTiroX = novaPosX - 76;
                             posTiroY = novaPosY + 16;
                         }
+                        direcaoTiro = dirRecebido;
                         canShoot = 1;
                     } else if (vet[bulletGo].compareTo("-1") == 0) {
                         canShoot = 1;
-                        if (direcao == 1 && verificaWallDir(novaPosTiroX, novaPosTiroY) == 1) {
+                        if (direcaoTiro == 1 && verificaWallDir(novaPosTiroX, novaPosTiroY, 15, 5) == 1) {
                             novaPosTiroX += anda;
                             posTiroX = novaPosTiroX;
-                        } else if (direcao == -1 && verificaWallEsq(novaPosTiroX, novaPosTiroY) == 1) {
+                        } else if (direcaoTiro == -1 && verificaWallEsq(novaPosTiroX, novaPosTiroY, 15, 5) == 1) {
                             novaPosTiroX -= anda;
                             posTiroX = novaPosTiroX;
                         } else {
-                            novaPosTiroX = 1030;
-                            novaPosTiroY = 1000;
+                            posTiroX = 1030;
+                            posTiroY = 1000;
                             canShoot = 0;
                         }
 
@@ -213,14 +215,14 @@ class Servindo extends Thread {
                 if (vet[btCliente].compareTo("RIGHT") == 0 || vet[btCliente].compareTo("SPACE-AND-RIGHT") == 0) {
                     if (vet[dirCliente].compareTo("-1") == 0)
                         novaPosX -= 32;
-                    if (verificaWallDir(novaPosX, novaPosY) == 1)
+                    if (verificaWallDir(novaPosX, novaPosY, 32, 32) == 1)
                         novaPosX += anda;
                     direcao = 1;
                 }
                 if (vet[btCliente].compareTo("LEFT") == 0 || vet[btCliente].compareTo("SPACE-AND-LEFT") == 0) {
                     if (vet[dirCliente].compareTo("1") == 0)
                         novaPosX += 32;
-                    if (verificaWallEsq(novaPosX - 32, novaPosY) == 1)
+                    if (verificaWallEsq(novaPosX - 32, novaPosY, 32, 32) == 1)
                         novaPosX -= anda;
                     direcao = -1;
                 }
