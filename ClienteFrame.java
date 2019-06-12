@@ -15,9 +15,9 @@ public class ClienteFrame extends JFrame implements Runnable {
     Image background[] = new Image[1];
     static PrintStream os = null;
     int posX1 = 64;
-    int posY1 = 63;
+    int posY1 = 60;
     int posX2 = 960;
-    int posY2 = 63;
+    int posY2 = 60;
     int posTiroX1 = 1030;
     int posTiroY1 = 1000;
     int posTiroX2 = 1030;
@@ -28,7 +28,7 @@ public class ClienteFrame extends JFrame implements Runnable {
     int posArmaY2 = 75; // 10
     int varControle = -1; // Variável para saber qual cliente é
     int dirCliente1 = 1, dirCliente2 = 1, estadoClient1 = 0, estadoClient2 = 0;
-    int gravidade1 = 0, gravidade2 = 0, qntPulo = 0, canBulletGo1 = 0, canBulletGo2 = 0;
+    int gravidade1 = 0, gravidade2 = 0, qntPulo = 0, canBulletGo1 = 0, canBulletGo2 = 0, canShoot1 = 0, canShoot2 = 0;
     final int size = 2, cliente1 = 0, cliente2 = 1, numCliente = 0, posClienteX = 1, posClienteY = 2, btCliente = 3,
             gravCliente = 4, dirCliente = 5, estadoCliente = 6, posBulletX = 7, posBulletY = 8, bulletGo = 9;
     String estadoCliente1 = new String("Player1Parado"), estadoCliente2 = new String("Player2Parado"), inputValue;
@@ -96,10 +96,10 @@ public class ClienteFrame extends JFrame implements Runnable {
     public void concatenaValores(String btRecebido, int cliente) {
         if (cliente == 1)
             inputValue = varControle + " " + posX1 + " " + posY1 + " " + btRecebido + " 0 " + dirCliente1 + " "
-                    + estadoClient1 + " " + posTiroX1 + " " + posTiroY1 + " 0";
+                    + estadoClient1 + " " + posTiroX1 + " " + posTiroY1 + " " + canShoot1;
         if (cliente == 2)
             inputValue = varControle + " " + posX2 + " " + posY2 + " " + btRecebido + " 0 " + dirCliente2 + " "
-                    + estadoClient2 + " " + posTiroX2 + " " + posTiroY2 + " 0";
+                    + estadoClient2 + " " + posTiroX2 + " " + posTiroY2 + " " + canShoot2;
     }
 
     ClienteFrame() {
@@ -123,8 +123,11 @@ public class ClienteFrame extends JFrame implements Runnable {
                     break;
                 case KeyEvent.VK_W:
                     isBulletOn = true;
-                    if(varControle == 0)
+                    if (varControle == 0){
+                        canShoot1 = 0;
+                        canBulletGo1 = 1;
                         isBulletOnCliente1 = true;
+                    }
                     else if (varControle == 1)
                         isBulletOnCliente2 = true;
                     break;
@@ -144,7 +147,7 @@ public class ClienteFrame extends JFrame implements Runnable {
                     break;
                 case KeyEvent.VK_W:
                     isBulletOn = false;
-                    if(varControle == 0)
+                    if (varControle == 0)
                         isBulletOnCliente1 = false;
                     else if (varControle == 1)
                         isBulletOnCliente2 = false;
@@ -161,11 +164,17 @@ public class ClienteFrame extends JFrame implements Runnable {
                     do {
                         Thread.sleep(100);
                         if (isBulletOnCliente1) {
-                            while(canBulletGo1 == 1){
+                            while (canBulletGo1 == 1) {
+                                if (canShoot1 == 0) {
+                                    canShoot1 = 1;
+                                    concatenaValores("BULLET", 1);
+                                    os.println(inputValue);
+                                }
+                                canShoot1 = -1;
                                 concatenaValores("BULLET", 1);
                                 os.println(inputValue);
                                 Thread.sleep(30);
-                            } 
+                            }
                         }
                     } while (true);
                 } catch (InterruptedException e) {
@@ -181,7 +190,11 @@ public class ClienteFrame extends JFrame implements Runnable {
                     do {
                         Thread.sleep(100);
                         if (isBulletOnCliente2) {
-                            while(canBulletGo2 == 1){
+                            canShoot2 = 1;
+                            concatenaValores("BULLET", 2);
+                            os.println(inputValue);
+                            while (canBulletGo2 == 1) {
+                                canShoot2 = -1;
                                 concatenaValores("BULLET", 2);
                                 os.println(inputValue);
                                 Thread.sleep(30);
@@ -195,7 +208,7 @@ public class ClienteFrame extends JFrame implements Runnable {
 
         new Thread(new Runnable() {
 
-    public void run() {
+            public void run() {
                 try {
                     if (varControle == -1)
                         Thread.sleep(500);
@@ -352,13 +365,13 @@ public class ClienteFrame extends JFrame implements Runnable {
                     else
                         posArmaX1 = posAtualRecebidaX - 5;
                     posArmaY1 = posAtualRecebidaY + 10;
-                    
+
                     if (dirClienteRecebido == 1)
                         posTiroX1 = posAtualRecebidaTiroX;
                     else
                         posTiroX1 = posAtualRecebidaTiroX;
                     posTiroY1 = posAtualRecebidaTiroY;
-                    
+
                     estadoCliente1 = vet[estadoCliente];
                     dirCliente1 = dirClienteRecebido;
                     verificaEstado(estClienteRecebido, 0);
@@ -382,7 +395,7 @@ public class ClienteFrame extends JFrame implements Runnable {
                     else
                         posTiroX2 = posAtualRecebidaTiroX;
                     posTiroY2 = posAtualRecebidaTiroY;
-                    
+
                     estadoCliente2 = vet[estadoCliente];
                     dirCliente2 = dirClienteRecebido;
                     verificaEstado(estClienteRecebido, 1);
