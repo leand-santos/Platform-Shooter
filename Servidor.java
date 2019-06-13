@@ -50,6 +50,7 @@ class Servindo extends Thread {
     int direcao, estadoClient1 = 1, estadoClient2 = 1, estado1, estado2, contPulo = 0, posTiroX = 1030, posTiroY = 1000,
             direcaoTiro, canShoot, isGravityOn = 0;
     boolean isKeySpacePressed = false;
+    static int posX1, posY1, posX2, posY2;
 
     Servindo(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -163,6 +164,75 @@ class Servindo extends Thread {
         return 1;
     }
 
+    public int verificaHitBoxDir(int coordPlayerX, int coordPlayerY, int coordTiroX, int coordTiroY) {
+        /*
+         * int verX, verY1, verY2, verTX, verTY1, verTY2; verX = coordPlayerX; verY1 =
+         * coordPlayerY; verY2 = coordPlayerY + 32; verTX = coordTiroX + 15; verTY1 =
+         * coordTiroY; verTY2 = coordTiroY + 5;
+         */
+        System.out.println("TX " + coordTiroX);
+        System.out.println("TY " + coordTiroY);
+        System.out.println("PX " + coordPlayerX);
+        System.out.println("PY " + coordPlayerY);
+        if (coordPlayerX <= coordTiroX + 15) {
+            System.out.println("ENTROU 3 ---------------------------------");
+            if (coordTiroY <= coordPlayerY && coordTiroY + 5 >= coordPlayerY + 32) {
+                System.out.println("ENTROU ---------------------------------");
+                return 1;
+            }
+        }
+        return 0;
+    }
+
+    public int verificaHitBoxEsq(int coordPlayerX, int coordPlayerY, int coordTiroX, int coordTiroY) {
+        /*
+         * int verX, verY1, verY2, verTX, verTY1, verTY2; verX = coordPlayerX+32; verY1
+         * = coordPlayerY; verY2 = coordPlayerY + 32; verTX = coordTiroX; verTY1 =
+         * coordTiroY; verTY2 = coordTiroY + 5;
+         */
+        System.out.println("TX " + coordTiroX);
+        System.out.println("TY " + coordTiroY);
+        System.out.println("PX " + coordPlayerX);
+        System.out.println("PY " + coordPlayerY);
+        if (coordPlayerX + 32 >= coordTiroX) {
+            System.out.println("ENTROU 3 ---------------------------------");
+            if (coordTiroY <= coordPlayerY && coordTiroY + 5 >= coordPlayerY + 32) {
+                System.out.println("ENTROU ---------------------------------");
+                return 1;
+            }
+        }
+        return 0;
+    }
+
+    public void verificaTiro(int novaPosTiroX, int novaPosTiroY, int posPersonagemX, int posPersonagemY) {
+        if (direcaoTiro == 1 && verificaHitBoxDir(posPersonagemX, posPersonagemY, novaPosTiroX, novaPosTiroY) == 1) {
+            System.out.println("ACERTOU PLAYER -----------------------------------");
+            posTiroX = 1030;
+            posTiroY = 1000;
+            canShoot = 0;
+        }
+        if (direcaoTiro == -1 && verificaHitBoxEsq(posPersonagemX, posPersonagemY, novaPosTiroX, novaPosTiroY) == 1) {
+            System.out.println("ACERTOU PLAYER -----------------------------------");
+            posTiroX = 1030;
+            posTiroY = 1000;
+            canShoot = 0;
+        }
+        if (verificaWallDir(novaPosTiroX, novaPosTiroY, 15, 5) == 0
+                || verificaWallEsq(novaPosTiroX, novaPosTiroY, 15, 5) == 0) {
+            posTiroX = 1030;
+            posTiroY = 1000;
+            canShoot = 0;
+        }
+        if (direcaoTiro == 1 && verificaWallDir(novaPosTiroX, novaPosTiroY, 15, 5) == 1) {
+            novaPosTiroX += anda;
+            posTiroX = novaPosTiroX;
+        }
+        if (direcaoTiro == -1 && verificaWallEsq(novaPosTiroX, novaPosTiroY, 15, 5) == 1) {
+            novaPosTiroX -= anda;
+            posTiroX = novaPosTiroX;
+        }
+    }
+
     public void enviaDados(int i, int novaPosX, int novaPosY, int est) {
         os[i].println(vet[numCliente] + " " + novaPosX + " " + novaPosY + " " + vet[btCliente] + " " + isGravityOn + " "
                 + direcao + " " + est + " " + posTiroX + " " + posTiroY + " " + canShoot);
@@ -182,6 +252,14 @@ class Servindo extends Thread {
                 int novaPosX = Integer.parseInt(vet[posClienteX]);
                 int novaPosY = Integer.parseInt(vet[posClienteY]);
                 int cliente = Integer.parseInt(vet[numCliente]);
+                if (cliente == 0) { // salva a última posição para verificar se o tiro acertou
+                    posX1 = novaPosX;
+                    posY1 = novaPosY;
+                }
+                if (cliente == 1) {
+                    posX2 = novaPosX;
+                    posY2 = novaPosY;
+                }
                 if (vet[btCliente].compareTo("BULLET") == 0) {
                     int novaPosTiroX = Integer.parseInt(vet[posBulletX]);
                     int novaPosTiroY = Integer.parseInt(vet[posBulletY]);
@@ -198,18 +276,12 @@ class Servindo extends Thread {
                         canShoot = 1;
                     } else if (vet[bulletGo].compareTo("-1") == 0) {
                         canShoot = 1;
-                        if (direcaoTiro == 1 && verificaWallDir(novaPosTiroX, novaPosTiroY, 15, 5) == 1) {
-                            novaPosTiroX += anda;
-                            posTiroX = novaPosTiroX;
-                        } else if (direcaoTiro == -1 && verificaWallEsq(novaPosTiroX, novaPosTiroY, 15, 5) == 1) {
-                            novaPosTiroX -= anda;
-                            posTiroX = novaPosTiroX;
-                        } else {
-                            posTiroX = 1030;
-                            posTiroY = 1000;
-                            canShoot = 0;
+                        if (cliente == 0) {
+                            verificaTiro(novaPosTiroX, novaPosTiroY, posX2, posY2);
                         }
-
+                        if (cliente == 1) {
+                            verificaTiro(novaPosTiroX, novaPosTiroY, posX1, posY1);
+                        }
                     }
                 }
                 if (vet[btCliente].compareTo("RIGHT") == 0 || vet[btCliente].compareTo("SPACE-AND-RIGHT") == 0) {
@@ -280,7 +352,9 @@ class Servindo extends Thread {
             is.close();
             clientSocket.close(); // fecha o cliente
 
-        } catch (IOException e) {
+        } catch (
+
+        IOException e) {
             e.printStackTrace();
         } catch (NoSuchElementException e) {
             System.out.println("Conexao terminada pelo cliente");

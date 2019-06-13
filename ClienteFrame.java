@@ -208,7 +208,10 @@ public class ClienteFrame extends JFrame implements Runnable {
                     if (varControle == -1)
                         Thread.sleep(500);
                     do {
-                        Thread.sleep(30);
+                        if(canBulletGo1 == 1 || canBulletGo2 == 1)
+                            Thread.sleep(20);
+                        else
+                            Thread.sleep(15);
                         if (isKeyRightPressed) {
                             if (varControle == cliente1)
                                 concatenaValores("RIGHT", 1);
@@ -253,24 +256,14 @@ public class ClienteFrame extends JFrame implements Runnable {
                     if (varControle == -1)
                         Thread.sleep(500);
                     do {
-                        Thread.sleep(30);
+                        if(canBulletGo1 == 1 || canBulletGo2 == 1)
+                            Thread.sleep(20);
+                        else
+                            Thread.sleep(15);
                         if (gravidade1 == 1 && varControle == 0) {
                             concatenaValores("GRAVIDADE", 1);
                             os.println(inputValue);
                         }
-                    } while (true);
-                } catch (InterruptedException e) {
-                }
-            }
-        }).start();
-
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    if (varControle == -1)
-                        Thread.sleep(500);
-                    do {
-                        Thread.sleep(30);
                         if (gravidade2 == 1 && varControle == 1) {
                             concatenaValores("GRAVIDADE", 2);
                             os.println(inputValue);
