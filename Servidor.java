@@ -37,20 +37,41 @@ class Servidor {
 }
 
 class Servindo extends Thread {
-    String nomePersonagem[] = { "Player1Parado", "Player1Mov1", "Player1Mov2", "Player1Mov3", "Player1Mov4",
-            "Player1Mov5", "Player1Morte1", "Player1Morte2", "Player1Morte3", "Player1Morte4", "Player1Morte5",
-            "Player1Morte6", "Player2Parado", "Player2Mov1", "Player2Mov2", "Player2Mov3", "Player2Mov4", "Player2Mov5",
-            "Player2Morte1", "Player2Morte2", "Player2Morte3", "Player2Morte4", "Player2Morte5", "Player2Morte6" };
+    // Constantes para acesso a String
     final int anda = 3, cliente1 = 0, cliente2 = 1, numCliente = 0, posClienteX = 1, posClienteY = 2, btCliente = 3,
-            gravCliente = 4, dirCliente = 5, estadoCliente = 6, posBulletX = 7, posBulletY = 8, bulletGo = 9;
+            gravCliente = 4, dirCliente = 5, estadoCliente = 6, posBulletX = 7, posBulletY = 8, bulletGo = 9, qntVida = 10;
+
+    // Conexao do cliente
     Socket clientSocket;
     static PrintStream os[] = new PrintStream[3];
     static int cont = 0;
+
+    // Vetor para receber cada posição da String
     String vet[] = new String[20];
-    int direcao, estadoClient1 = 1, estadoClient2 = 1, estado1, estado2, contPulo = 0, posTiroX = 1030, posTiroY = 1000,
-            direcaoTiro, canShoot, isGravityOn = 0;
+
+    // Variaveis de atributos dos personagens e controle
+    int direcao;
+    int direcaoTiro; 
+    int contPulo = 0; 
+    int posTiroX = 1030; 
+    int posTiroY = 1000;
+    int canShoot; 
+    int isGravityOn = 0;
     boolean isKeySpacePressed = false;
-    static int posX1, posY1, posX2, posY2;
+
+    // Variáveis Jogador 1
+    static int posX1;
+    static int posY1;
+    static int numVida1 = 3;
+    int estadoClient1 = 1;
+    int estado1; 
+    
+    // Variáveis Jogador 2
+    static int posX2;
+    static int posY2;
+    static int numVida2 = 3;
+    int estadoClient2 = 1;
+    int estado2;
 
     Servindo(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -165,19 +186,8 @@ class Servindo extends Thread {
     }
 
     public int verificaHitBoxDir(int coordPlayerX, int coordPlayerY, int coordTiroX, int coordTiroY) {
-        /*
-         * int verX, verY1, verY2, verTX, verTY1, verTY2; verX = coordPlayerX; verY1 =
-         * coordPlayerY; verY2 = coordPlayerY + 32; verTX = coordTiroX + 15; verTY1 =
-         * coordTiroY; verTY2 = coordTiroY + 5;
-         */
-        System.out.println("TX " + coordTiroX);
-        System.out.println("TY " + coordTiroY);
-        System.out.println("PX " + coordPlayerX);
-        System.out.println("PY " + coordPlayerY);
-        if (coordPlayerX <= coordTiroX + 15) {
-            System.out.println("ENTROU 3 ---------------------------------");
-            if (coordTiroY <= coordPlayerY && coordTiroY + 5 >= coordPlayerY + 32) {
-                System.out.println("ENTROU ---------------------------------");
+        if (coordPlayerX >= coordTiroX - 15 && coordPlayerX - 32 <= coordTiroX - 15) {
+            if (coordTiroY >= coordPlayerY && coordTiroY + 5 <= coordPlayerY + 32) {
                 return 1;
             }
         }
@@ -185,37 +195,32 @@ class Servindo extends Thread {
     }
 
     public int verificaHitBoxEsq(int coordPlayerX, int coordPlayerY, int coordTiroX, int coordTiroY) {
-        /*
-         * int verX, verY1, verY2, verTX, verTY1, verTY2; verX = coordPlayerX+32; verY1
-         * = coordPlayerY; verY2 = coordPlayerY + 32; verTX = coordTiroX; verTY1 =
-         * coordTiroY; verTY2 = coordTiroY + 5;
-         */
-        System.out.println("TX " + coordTiroX);
-        System.out.println("TY " + coordTiroY);
-        System.out.println("PX " + coordPlayerX);
-        System.out.println("PY " + coordPlayerY);
-        if (coordPlayerX + 32 >= coordTiroX) {
-            System.out.println("ENTROU 3 ---------------------------------");
-            if (coordTiroY <= coordPlayerY && coordTiroY + 5 >= coordPlayerY + 32) {
-                System.out.println("ENTROU ---------------------------------");
+        if (coordPlayerX + 32 >= coordTiroX && coordPlayerX <= coordTiroX + 15) {
+            if (coordTiroY >= coordPlayerY && coordTiroY + 5 <= coordPlayerY + 32) {
                 return 1;
             }
         }
         return 0;
     }
 
-    public void verificaTiro(int novaPosTiroX, int novaPosTiroY, int posPersonagemX, int posPersonagemY) {
+    public void verificaTiro(int novaPosTiroX, int novaPosTiroY, int posPersonagemX, int posPersonagemY, int cliente) {
         if (direcaoTiro == 1 && verificaHitBoxDir(posPersonagemX, posPersonagemY, novaPosTiroX, novaPosTiroY) == 1) {
-            System.out.println("ACERTOU PLAYER -----------------------------------");
             posTiroX = 1030;
             posTiroY = 1000;
             canShoot = 0;
+            if(cliente == 0)
+                numVida1--;
+            else
+                numVida2--;
         }
         if (direcaoTiro == -1 && verificaHitBoxEsq(posPersonagemX, posPersonagemY, novaPosTiroX, novaPosTiroY) == 1) {
-            System.out.println("ACERTOU PLAYER -----------------------------------");
             posTiroX = 1030;
             posTiroY = 1000;
             canShoot = 0;
+            if(cliente == 0)
+                numVida1--;
+            else
+                numVida2--;
         }
         if (verificaWallDir(novaPosTiroX, novaPosTiroY, 15, 5) == 0
                 || verificaWallEsq(novaPosTiroX, novaPosTiroY, 15, 5) == 0) {
@@ -233,9 +238,9 @@ class Servindo extends Thread {
         }
     }
 
-    public void enviaDados(int i, int novaPosX, int novaPosY, int est) {
+    public void enviaDados(int i, int novaPosX, int novaPosY, int est, int qntVida) {
         os[i].println(vet[numCliente] + " " + novaPosX + " " + novaPosY + " " + vet[btCliente] + " " + isGravityOn + " "
-                + direcao + " " + est + " " + posTiroX + " " + posTiroY + " " + canShoot);
+                + direcao + " " + est + " " + posTiroX + " " + posTiroY + " " + canShoot + " " + qntVida);
         os[i].flush();
     }
 
@@ -277,10 +282,10 @@ class Servindo extends Thread {
                     } else if (vet[bulletGo].compareTo("-1") == 0) {
                         canShoot = 1;
                         if (cliente == 0) {
-                            verificaTiro(novaPosTiroX, novaPosTiroY, posX2, posY2);
+                            verificaTiro(novaPosTiroX, novaPosTiroY, posX2, posY2, cliente);
                         }
                         if (cliente == 1) {
-                            verificaTiro(novaPosTiroX, novaPosTiroY, posX1, posY1);
+                            verificaTiro(novaPosTiroX, novaPosTiroY, posX1, posY1, cliente);
                         }
                     }
                 }
@@ -330,20 +335,13 @@ class Servindo extends Thread {
                     }
                 }
                 isGravityOn = verificaGrav(novaPosX, novaPosY, direcao);
-
-                /*
-                 * System.out.println("Cliente " + vet[numCliente] + " posX " + novaPosX +
-                 * " posY " + vet[posClienteY] + " bt " + vet[btCliente] + " grav " +
-                 * verificaGrav(novaPosX, novaPosY, direcao) + " dir " + direcao + " est1 " +
-                 * estadoClient1 + " est2 " + estadoClient2);
-                 */
                 for (int i = 0; i < cont; i++) {
                     if (cliente == 0)
-                        enviaDados(i, novaPosX, novaPosY, estado1);
+                        enviaDados(i, novaPosX, novaPosY, estado1, numVida1);
                     else if (cliente == 1)
-                        enviaDados(i, novaPosX, novaPosY, estado2);
+                        enviaDados(i, novaPosX, novaPosY, estado2, numVida2);
                     else
-                        enviaDados(i, novaPosX, novaPosY, 0);
+                        enviaDados(i, novaPosX, novaPosY, 0, 0);
                 }
             } while (!inputLine.equals(""));
 
