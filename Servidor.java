@@ -1,7 +1,6 @@
 import java.net.*;
 import java.io.*;
 import java.util.*;
-import java.lang.*;
 
 class Servidor {
     public static void main(String[] args) {
@@ -254,9 +253,13 @@ class Servindo extends Thread {
                 inputLine = is.nextLine();
                 System.out.println(inputLine);
                 vet = inputLine.split(" ");
+
+                // Salvando as posições e o numero do Cliente em um inteiro
                 int novaPosX = Integer.parseInt(vet[posClienteX]);
                 int novaPosY = Integer.parseInt(vet[posClienteY]);
                 int cliente = Integer.parseInt(vet[numCliente]);
+
+                // Guardando as posições dos jogadores
                 if (cliente == 0) { // salva a última posição para verificar se o tiro acertou
                     posX1 = novaPosX;
                     posY1 = novaPosY;
@@ -265,6 +268,8 @@ class Servindo extends Thread {
                     posX2 = novaPosX;
                     posY2 = novaPosY;
                 }
+
+                // Verifica se a bala pode continuar
                 if (vet[btCliente].compareTo("BULLET") == 0) {
                     int novaPosTiroX = Integer.parseInt(vet[posBulletX]);
                     int novaPosTiroY = Integer.parseInt(vet[posBulletY]);
@@ -289,6 +294,8 @@ class Servindo extends Thread {
                         }
                     }
                 }
+
+                // Verifica o movimento para a direita
                 if (vet[btCliente].compareTo("RIGHT") == 0 || vet[btCliente].compareTo("SPACE-AND-RIGHT") == 0) {
                     if (vet[dirCliente].compareTo("-1") == 0)
                         novaPosX -= 32;
@@ -296,6 +303,8 @@ class Servindo extends Thread {
                         novaPosX += anda;
                     direcao = 1;
                 }
+
+                // Verifica o movimento para a esquerda
                 if (vet[btCliente].compareTo("LEFT") == 0 || vet[btCliente].compareTo("SPACE-AND-LEFT") == 0) {
                     if (vet[dirCliente].compareTo("1") == 0)
                         novaPosX += 32;
@@ -304,6 +313,7 @@ class Servindo extends Thread {
                     direcao = -1;
                 }
 
+                // Verifica o pulo
                 if ((vet[btCliente].compareTo("SPACE") == 0 || vet[btCliente].compareTo("SPACE-AND-RIGHT") == 0
                         || vet[btCliente].compareTo("SPACE-AND-LEFT") == 0)
                         && (verificaGrav(novaPosX + anda, novaPosY + anda, direcao) == 0)) {
@@ -311,18 +321,23 @@ class Servindo extends Thread {
                     contPulo = 0;
                 }
 
+                // Verifica o estado do jogador 1
                 if (vet[numCliente].compareTo("0") == 0 && vet[btCliente].compareTo("A") != 0) {
                     estado1 = estadoClient1;
                     estadoClient1++;
                     if (estadoClient1 == 5)
                         estadoClient1 = 1;
                 }
+
+                // Verifica o estado do Jogador 2
                 if (vet[numCliente].compareTo("1") == 0 && vet[btCliente].compareTo("A") != 0) {
                     estado2 = estadoClient2;
                     estadoClient2++;
                     if (estadoClient2 == 5)
                         estadoClient2 = 1;
                 }
+
+                // Verifica a gravidade
                 if (verificaGrav(novaPosX, novaPosY, direcao) == 1 && !isKeySpacePressed)
                     novaPosY += anda;
                 else if (verificaGrav(novaPosX, novaPosY, direcao) == 1 && isKeySpacePressed) {
@@ -334,7 +349,11 @@ class Servindo extends Thread {
                         contPulo = 0;
                     }
                 }
+
+                // Retorna se tem a gravidade ou não
                 isGravityOn = verificaGrav(novaPosX, novaPosY, direcao);
+
+                // Envia os comandos para todos os clientes
                 for (int i = 0; i < cont; i++) {
                     if (cliente == 0)
                         enviaDados(i, novaPosX, novaPosY, estado1, numVida1);

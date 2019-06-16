@@ -1,11 +1,9 @@
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
-import java.awt.image.*;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import java.util.Timer;
 import javax.imageio.*;
 
 public class ClienteFrame extends JFrame implements Runnable {
