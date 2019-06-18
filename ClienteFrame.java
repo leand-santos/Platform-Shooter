@@ -450,7 +450,7 @@ public class ClienteFrame extends JFrame implements Runnable {
             String vet[] = new String[10];
             do {
                 inputLine = is.nextLine();
-                System.out.println(inputLine);
+                //System.out.println(inputLine);
                 vet = inputLine.split(" ");
 
                 // Cliente recebido

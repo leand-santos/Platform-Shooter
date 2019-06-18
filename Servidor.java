@@ -21,7 +21,7 @@ class Servidor {
                 System.exit(1);
             }
 
-            System.out.println("Accept Funcionou!");
+            System.out.println("Cliente se conectou!");
 
             new Servindo(clientSocket).start();
 
@@ -75,6 +75,7 @@ class Servindo extends Thread {
     Servindo(Socket clientSocket) {
         this.clientSocket = clientSocket;
         try {
+            System.out.println("Cliente" + cont + " conectado");
             os[cont] = new PrintStream(clientSocket.getOutputStream());
             os[cont].println(cont);
             os[cont].flush();
@@ -251,7 +252,7 @@ class Servindo extends Thread {
             String inputLine;
             do { // distribuição para os clientes
                 inputLine = is.nextLine();
-                System.out.println(inputLine);
+                //System.out.println(inputLine);
                 vet = inputLine.split(" ");
 
                 // Salvando as posições e o numero do Cliente em um inteiro
